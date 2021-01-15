@@ -1,0 +1,165 @@
+#Libraries
+library(DSS)
+library(bsseq)
+library(doParallel)
+library(ChIPseeker)
+library(foreach)
+library(SummarizedExperiment)
+library(doMC)
+library(rtracklayer)
+library(HDF5Array)
+library(org.Mm.eg.db)
+library(ggpubr)
+library(randomcoloR)
+library(RColorBrewer)
+library(VennDiagram)
+library(ChIPpeakAnno)
+library(dendextend)
+library(pheatmap)
+
+#Directories
+input.dir <- "/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/"
+analysis.dir <-  "/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/DMR_sub"
+input.dir <- "icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/"
+analysis.dir <-  "icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/DMR_sub"
+
+#load data
+bsseq_all <- readRDS(file.path(input.dir , "bsseq","bsseq_all.rds"))
+dmrs_final<-readRDS(file.path(analysis.dir,"medecom_dss" ,"dmrs_gr_anno_inter.rds"))
+dmrs_gr_red <- readRDS(file.path(analysis.dir, "dmrs_gr_reduced_anno_inter.rds"))
+
+bsseq_all$tumor11_JMMLC_D129 <- NULL
+
+#add methylation information of each samples
+meth <- list()
+for(i in names(dmrs_final)){
+    meth[[i]] <- bsseq::getMeth(bsseq_all, regions=dmrs_final[[i]], what="perRegion", type="raw")
+    mcols(dmrs_final[[i]]) <- cbind(mcols(dmrs_final[[i]]), meth[[i]]) 
+}
+saveRDS(dmrs_final, file.path(analysis.dir, "dmrs_gr_anno_inter.rds"))
+
+
+#add reduced data for common analysis
+dmrs_final$all <- dmrs_gr_red
+
+#export text files
+for(i in names(dmrs_final)){
+    dir.create(file.path(analysis.dir,i))
+    write.table(as.data.frame(dmrs_final[[i]]),file.path(analysis.dir,i, paste0(i,"_","dmrs_final.txt")),row.names = FALSE, quote=FALSE, sep="\t")
+}
+
+#width of dmrs
+for(i in names(dmrs_final)){
+    temp <- width(dmrs_final[[i]])
+    dir.create(file.path(analysis.dir, i, "visualization"))
+    pdf(file.path(analysis.dir, i, "visualization", paste0("DMR_width_histo",i, ".pdf")), height=4, width=4)
+    print(gghistogram(as.data.frame(temp), x="temp", fill="grey", add_density=TRUE,add="mean",bins=50, rug=TRUE, xlab="Width of DMRs [bp]", ylab="# of DMRs")+xscale("log2"))
+    dev.off()
+    print(mean(temp))
+    dmrs_final[[i]]$comparison <- i
+}
+width <- lapply(dmrs_final, function(x){
+    width <- as.data.frame(width(x))
+    width$comparison <- x$comparison
+    width
+})
+width$all <- NULL
+width <- do.call("rbind", width)
+colnames(width)<-c("width", "comparison")
+dir.create(file.path(analysis.dir,"common_visualization"))
+pdf(file.path(analysis.dir,"common_visualization", "DMr_width_allComparison.pdf"), height=4, width=7)
+gghistogram(width, x="width", color="comparison", add="mean",add_density=TRUE,bins=50, rug=TRUE, xlab="Width of DMRs [bp]", ylab="# of DMRs", palette="jco",legend="right") +xscale("log2")
+dev.off()
+
+#pca of all original dmrs
+#PCA
+for(i in names(dmrs_final)){
+     meth_dmr <- mcols(dmrs_final[[i]])[,rownames(pData(bsseq_all))]
+    
+    meth_dmr <- meth_dmr[complete.cases(meth_dmr),]
+    ir.pca <- prcomp(t(as.matrix(meth_dmr)),
+                 center = T,
+                 scale. = F) 
+    
+    print(i)
+    print(summary(ir.pca))
+    pc <- ir.pca$x
+    pc<- as.data.frame(cbind(pc , pData(bsseq_all)))
+
+    pdf(file.path(analysis.dir,i, "visualization", "PCA12_allDMRs.pdf"), height=4, width=4)
+    print(ggscatter(pc, x="PC1", y="PC2",
+          color = "Epigenotype", shape = "tumor", size="Genotype",
+          ellipse = F , mean.point = FALSE,#palette=c("#86868699", "#0073C299", "#CD534CFF","#EFC00099"),
+          star.plot = F, xlab=(paste0("PC1: ", round(summary(ir.pca)$importance[2,1]*100,2), "% variance")), 
+          ylab=(paste0("PC2: ", round(summary(ir.pca)$importance[2,2]*100,2), "% variance")))+theme(legend.position="right"))
+    dev.off()
+
+    pdf(file.path(analysis.dir, i, "visualization","PCA23_allDMRs.pdf"), height=4, width=4)
+    print(ggscatter(pc, x="PC2", y="PC3",
+          color = "Epigenotype", shape = "tumor", size="Genotype",
+          ellipse = F , mean.point = FALSE, #palette=c("#86868699", "#0073C299", "#CD534CFF","#EFC00099"),
+          star.plot = F, xlab=(paste0("PC2: ", round(summary(ir.pca)$importance[2,2]*100,2), "% variance")), 
+          ylab=(paste0("PC3: ", round(summary(ir.pca)$importance[2,3]*100,2), "% variance")))+theme(legend.position="right"))
+    dev.off()
+
+    pdf(file.path(analysis.dir, i, "visualization","PCA34_allDMRs.pdf"),height = 3.5, width = 5)
+    print(ggscatter(pc, x="PC3", y="PC4",
+          color = "Epigenotype", shape = "tumor", size="Genotype",
+          ellipse = F , mean.point = FALSE,#palette=c("#86868699", "#0073C299", "#CD534CFF","#EFC00099"),
+          star.plot = F, xlab=(paste0("PC3: ", round(summary(ir.pca)$importance[2,3]*100,2), 
+            "% variance")), ylab=(paste0("PC4: ", round(summary(ir.pca)$importance[2,4]*100,2), "% variance"))) +
+            theme(legend.position="right",legend.title = element_text(, size=10, 
+                                      face="bold")))
+    dev.off()
+}
+
+
+#Sample Clustering
+for( i in names(dmrs_final)){
+    meth_dmr <- mcols(dmrs_final[[i]])[,rownames(pData(bsseq_all))]
+    drld <- dist(t(as.matrix(meth_dmr)))
+    hrld<- hclust(drld)
+    dend<- hrld%>% as.dendrogram 
+
+    anno <- pData(bsseq_all)
+    #col1 <- hrld$labels
+    #names(col1)<- anno[col1,]$group
+    #col1 <- col1[order.dendrogram(dend)]
+    #col1 <- ifelse(names(col1)=="TAM_tumor", "#EFC00099", ifelse(names(col1)=="BMDM_tumor","#0073C299",  ifelse(names(col1)=="TAM_healthy","#CD534CFF","#86868699")))
+    dend <- dend %>% 
+    #set("branches_k_color", k=4, c("#EFC00099", "#0073C299", "#CD534CFF","#86868699" )) %>%
+    set("branches_lwd", 2) %>%
+    #set("labels_colors",col1) %>% 
+    set("labels_cex", .6 )%>%
+    set("leaves_pch", 19)%>% 
+    set("leaves_cex", 1.5)#%>% 
+    #set("leaves_col", col1)
+    
+    pdf(file.path(analysis.dir, i, "visualization", "Clustering_DMR_meth.pdf"), height = 6, width = 5)
+    print(dend %>% plot)
+    dev.off()
+
+}
+
+
+#Heatmap of DMRs
+#get contrasts
+
+for(i in names(dmrs_final)[2:length(names(dmrs_final))]){
+    #all dmrs in each comparison with all samples
+    meth_dmr <- mcols(dmrs_final[[i]])[,rownames(pData(bsseq_all))]
+    rownames(meth_dmr)<- paste0("Dmr.",1:nrow(meth_dmr),"_", dmrs_final[[i]]$SYMBOL)
+
+    #color_group<-c("#86868699", "#0073C299", "#CD534CFF","#EFC00099" )
+    #names(color_group)<- as.character(unique(colData(bsseq_all)$group))
+    #anno_colors <- list(group=color_group)
+    annovst <- as.data.frame(colData(bsseq_all))[, c("tumor", "patient", "Epigenotype", "Genotype")] 
+
+    pheatmap(meth_dmr,  annotation_col=as.data.frame(annovst),show_rownames=FALSE,show_colnames=FALSE, 
+        scale="row",fontsize_row=5,  #annotation_color=anno_colors,
+        filename=file.path(analysis.dir,i, "visualization","Heatmap_DMRs_noScale.pdf"))
+    pheatmap(meth_dmr,  annotation_col=as.data.frame(annovst),show_rownames=FALSE,show_colnames=FALSE, 
+        scale="none",fontsize_row=5,  #annotation_color=anno_colors,
+        filename=file.path(analysis.dir,i, "visualization","Heatmap_DMRs_Scale.pdf"))
+
+}

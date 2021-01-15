@@ -1,0 +1,133 @@
+##### Joschka Hey 
+##### 
+#Libraries
+library(DSS)
+library(bsseq)
+library(doParallel)
+library(ChIPseeker)
+library(foreach)
+library(SummarizedExperiment)
+library(doMC)
+library(rtracklayer)
+library(HDF5Array)
+library(pheatmap)
+library(randomcoloR)
+library(MeDeCom)
+
+#directoriesodcf.dir <- "/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/methylationCalls/"
+input.dir <- "/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/"
+analysis.dir <-  "/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200519_DMR_HM_vs_LM"
+
+#load data
+bsseq_all <- readRDS(file.path(input.dir , "bsseq","bsseq_all_snpfil_sub_cov.rds"))
+dmrs_red <- readRDS(file.path(analysis.dir, "sig_dmrs_5in4_sub_anno.rds"))
+dmrs_red_anal <- dmrs_red
+meth_all <- readRDS(file.path(analysis.dir  , "medecom","meth_medecom_input.rds"))
+
+#get dmr methylation values
+meth_all<-bsseq::getMeth(bsseq_all, regions=dmrs_red, what="perRegion", type="raw")
+idx <- complete.cases(meth_all)
+meth_all <- meth_all[idx,]
+dim(meth_all)
+dmrs_red_anal <- dmrs_red[idx,]
+length(dmrs_red_anal)
+saveRDS(dmrs_red_anal,file.path(analysis.dir, "medecom","dmrs_red_anal.rds" ))
+#load medecom results 
+medecom.result <- readRDS(file.path(analysis.dir, "medecom", "allDMRred_Medecom_results.rds"))
+
+
+#get cpg anno
+anno <- as.data.frame(dmrs_red)[,1:3]
+colnames(anno)<- c("Chromosome",   "Start", "End")
+
+#extract T matrix for k05
+T <-medecom.result@outputs$`1`$T
+T <- T[,"lambda_0.01"]$K_3
+#extract top 0.5 difference for all K 
+dmr_LMC_05 <- list()
+for(i in 1:3){
+    T_diff <- rowMeans(T[,-i])-T[,i]
+    T_hypo <- T_diff>0.5
+    T_hyper <- T_diff<(-0.5)
+    T_changed <- list(dmrs_red_anal[which(T_hypo),],dmrs_red_anal[which(T_hyper),] )
+    names(T_changed)<- c("hypo", "hyper")
+    dmr_LMC_05[[i]]<- T_changed
+}
+names(dmr_LMC_05)<- c("LMC1","LMC2", "LMC3")
+lapply(dmr_LMC_05, function(x)lapply(x, function(y)length(y)))
+#unique(as.factor(dmr_LMC_05$LMC1$hypo$SYMBOL))
+dir.create(file.path(analysis.dir, "medecom","downstream_K3_lambda0.01"))
+saveRDS(dmr_LMC_05, file.path(analysis.dir, "medecom","downstream_K3_lambda0.01", "dmr_LMC_05.rds"))
+
+#extract top 0.8 difference for all K 
+dmr_LMC_08 <- list()
+for(i in 1:3){
+    T_diff <- rowMeans(T[,-i])-T[,i]
+    T_hypo <- T_diff>0.8
+    T_hyper <- T_diff<(-0.8)
+    T_changed <- list(dmrs_red_anal[which(T_hypo),],dmrs_red_anal[which(T_hyper),] )
+    names(T_changed)<- c("hypo", "hyper")
+    dmr_LMC_08[[i]]<- T_changed
+}
+names(dmr_LMC_08)<- c("LMC1","LMC2", "LMC3")
+lapply(dmr_LMC_08, function(x)lapply(x, function(y)length(y)))
+#unique(as.factor(dmr_LMC_08$LMC1$hypo$SYMBOL))
+saveRDS(dmr_LMC_08, file.path(analysis.dir, "medecom","downstream_K3_lambda0.01", "dmr_LMC_08.rds"))
+
+
+#extract top 0.7 difference for all K 
+dmr_LMC_07 <- list()
+for(i in 1:3){
+    T_diff <- rowMeans(T[,-i])-T[,i]
+    T_hypo <- T_diff>0.7
+    T_hyper <- T_diff<(-0.7)
+    T_changed <- list(dmrs_red_anal[which(T_hypo),],dmrs_red_anal[which(T_hyper),] )
+    names(T_changed)<- c("hypo", "hyper")
+    dmr_LMC_07[[i]]<- T_changed
+}
+names(dmr_LMC_07)<- c("LMC1","LMC2", "LMC3")
+lapply(dmr_LMC_07, function(x)lapply(x, function(y)length(y)))
+#unique(as.factor(dmr_LMC_07$LMC1$hypo$SYMBOL))
+saveRDS(dmr_LMC_07, file.path(analysis.dir, "medecom","downstream_K3_lambda0.01", "dmr_LMC_07.rds"))
+
+#combine as a list
+dmr_LMC_list <- list(dmr_LMC_05, dmr_LMC_07, dmr_LMC_08)
+names(dmr_LMC_list)<- c("dmr_LMC_05", "dmr_LMC_07", "dmr_LMC_08")
+
+#subset only promoters
+dmr_LMC_list_promoters <- list()
+for(cut in names(dmr_LMC_list)){
+    dmr_LMC_list_promoters[[cut]]<-list()
+    for(lmc in names(dmr_LMC_list[[cut]])){
+         dmr_LMC_list_promoters[[cut]][[lmc]]<-list()
+         for(dir in names(dmr_LMC_list[[cut]][[lmc]])){
+                dmr_LMC_list_promoters[[cut]][[lmc]][[dir]] <- dmr_LMC_list[[cut]][[lmc]][[dir]][grep("Promoter", dmr_LMC_list[[cut]][[lmc]][[dir]]$annotation),]
+                print(paste(cut, lmc, dir, length(dmr_LMC_list_promoters[[cut]][[lmc]][[dir]]), sep=": "))
+        }
+    }
+}
+
+#all dmrs for only 0.7 difference
+#extract top 0.7 difference for all K 
+dmr_LMC_07_all <- list()
+for(i in 1:3){
+    T_diff <- rowMeans(T[,-i])-T[,i]
+    T_all<- abs(T_diff)>0.7
+    dmr_LMC_07_all[[i]]<- dmrs_red_anal[which(T_all),]
+}
+names(dmr_LMC_07_all)<- c("LMC1","LMC2", "LMC3")
+lapply(dmr_LMC_07_all, function(x)length(x))
+#unique(as.factor(dmr_LMC_07$LMC1$hypo$SYMBOL))
+saveRDS(dmr_LMC_07_all, file.path(analysis.dir, "medecom","downstream_K3_lambda0.01", "dmr_LMC_07_all.rds"))
+
+
+#unlist sets
+dmr_LMC_list_unlist <- unlist(dmr_LMC_list)
+dmr_LMC_list_promoters_unlist <- unlist(dmr_LMC_list_promoters)
+
+#save files
+dir.create(file.path(analysis.dir, "medecom","downstream_combined_K3_lambda0.01"))
+saveRDS(dmr_LMC_list_unlist, file.path(analysis.dir, "medecom","downstream_combined_K3_lambda0.01", "dmr_LMC_list_unlist.rds"))
+saveRDS(dmr_LMC_list_promoters_unlist, file.path(analysis.dir, "medecom","downstream_combined_K3_lambda0.01", "dmr_LMC_list_promoters_unlist.rds"))
+
+
