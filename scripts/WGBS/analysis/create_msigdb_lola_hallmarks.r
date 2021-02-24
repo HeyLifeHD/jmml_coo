@@ -48,6 +48,7 @@ for(i in names(msigdb_gene_regions)){
 
 
 #make combined object
+
 msigdb_both_regions<- list()
 for(i in names(msigdb_promoter_regions)){
    msigdb_both_regions[[i]] <- reduce(unlist(GRangesList(msigdb_promoter_regions[[i]], msigdb_gene_regions[[i]])))

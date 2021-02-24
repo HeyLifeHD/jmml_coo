@@ -20,11 +20,20 @@
 
 # doc/smk_wgbs_default_config.yaml
 #open screen
+# # Obtain cluster submission scripts for your scheduler
+    bsub \
+        -R "span[hosts=1]" \
+        -R rusage[mem=40G] \
+        -M 40G \
+        -n 12 \
+        -J int_24_12 \
+        -W 80:00 \
+        -m compute-nx360 \
+        -Is /bin/bash 
 #open modul
 #module load anaconda3/2019.07
 #open conda 
 #conda activate smk_wgbs
-# # Obtain cluster submission scripts for your scheduler
 
 # ie scripts: jobscript, submission, status
 
@@ -76,5 +85,6 @@ snakemake.snakemake(
         cluster_status="/icgc/dkfzlsdf/analysis/C010/scMeth_Workflow_Stephen/lsf-status.py",
         max_jobs_per_second=10,
         force_incomplete=True,
-        dryrun=False,
+        dryrun=False#,
+        #unlock=True
 )

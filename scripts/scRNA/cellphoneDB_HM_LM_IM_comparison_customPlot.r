@@ -8,6 +8,13 @@ data.dir <- file.path(base.dir, "out")
 output.dir <- file.path(base.dir, "custom_plots")
 dir.create(output.dir)
 
+#load expression data
+files <- list.files(path="/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/expression/200825_DEG/HM_vs_LM/", pattern=".csv", full.names=TRUE)
+expr <- as.data.frame(data.table::fread(files))
+expr$SYMBOL <- expr$gene
+#subset by padj
+expr_sub <- expr[expr$p_val_adj < 0.05,]
+
 #load comparisons of interest
 anno <- lapply(comp_oi, function(x){
         pvalues <- fread(file.path(base.dir,x, "output","pvalues.txt"))
@@ -110,5 +117,25 @@ for(i in unique(pvalues_melt_comb$sender)){
                     panel.border = element_rect(size = 0.7, linetype = "solid", colour = "black")))
     dev.off()
     print(i)
+
+    #subset by overlap with degs
+    plot_sub <- plot[plot$gene_a %in%  expr_sub$V1  | plot$gene_b %in%  expr_sub$V1 , ]
+    dir.create(file.path(output.dir, "LM_HM_IM_comparison", i, "DEG_sub"), recursive=TRUE)
+    pdf(file.path(output.dir, "LM_HM_IM_comparison" ,i, "DEG_sub","test.pdf"), height=ifelse(length(unique(plot_sub$interacting_pair))/2.5< 16,16,length(unique(plot_sub$interacting_pair))/2.5) , width=ifelse(length(unique(plot$interacting_pair))/2< 10,10,length(unique(plot$interacting_pair))/2) )
+            print(ggplot(data = plot_sub, aes(x=interacting_celltype, y=interacting_pair_compaarison)) +
+                geom_point(aes(size=logpval, fill=log2means), pch=21) +
+                scale_fill_gradient2( midpoint = 0, low="darkblue", high="darkred", name = "Log2 mean (Molecule 1 vs. Molecule 2)")+
+                scale_size(name="p-value\n(-log10)") +
+                theme_bw() +
+                theme(#panel.grid.minor = element_blank(),
+                    #panel.grid.major = element_blank(),
+                    axis.text=element_text(size=14, colour = "black"),
+                    axis.text.x = element_text(angle = 45, hjust = 1),
+                    axis.text.y = element_text(size=12, colour = "black"),
+                    axis.title=element_blank(),
+                    panel.border = element_rect(size = 0.7, linetype = "solid", colour = "black")))
+    dev.off()
+    print(i)
+
 }
 
