@@ -28,6 +28,23 @@ bsseq_all <- readRDS(file.path(input.dir ,"bsseq", "bsseq_HSC_comb_snpRemoved_re
 dmrs_final<- readRDS(file.path(analysis.dir, "dmrs_gr_sub_MethDiff.rds"))
 dmrs_red<- readRDS(file.path(analysis.dir, "dmrs_gr_sub_MethDiff_anno_reduced.rds"))
 
+#annotate dmrs
+dmrs_anno<- list()
+dmrs_anno_df<- list()
+#plot files and annotate
+require(TxDb.Hsapiens.UCSC.hg19.knownGene)
+txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene
+for(i in names(dmrs_final)){
+#annotate dmrs
+dmrs_anno[[i]] <- annotatePeak(peak= dmrs_final[[i]], tssRegion=c(-3000, 3000),
+                         TxDb=txdb, annoDb="org.Hs.eg.db")
+
+#extract annotated granges
+dmrs_anno_df[[i]] <- as.data.frame(dmrs_anno[[i]])
+mcols(dmrs_final[[i]]) <- dmrs_anno_df[[i]]
+}
+saveRDS(dmrs_final, file.path(analysis.dir, "dmrs_gr_sub_MethDiff_anno.rds"))
+
 #load HSC DMRs
 dmrs_HSC_red<- readRDS(file.path( "/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200801_DMR_hierachy_HSC_comb", "sig_dmrs_5inHalf_sub_anno_reduced.rds"))
 

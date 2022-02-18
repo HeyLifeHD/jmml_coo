@@ -63,7 +63,7 @@ dmrs_final <- lapply(dmrs_final, function(x){
     mcols(x)$peakID <- 1:length(x) 
     x
 })
-
+saveRDS(dmrs_final, file.path(analysis.dir, "dmrs_gr_sub_MethDiff_anno.rds"))
 
 #load expression data
 expr <- readRDS("/icgc/dkfzlsdf/analysis/C010/JMMLC/scRNA_Data/New/DEG/Statistics/HSC.PseudoBulk.rds")
