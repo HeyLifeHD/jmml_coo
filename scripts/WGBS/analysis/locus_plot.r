@@ -12,8 +12,11 @@ analysis.dir <-  "/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis
 dir.create("/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/locus_plots")
 
 #load meth
-bsseq_all <- readRDS( file.path(input.dir ,"bsseq", "bsseq_HSC_comb_snpRemoved_repMerged.rds"))
-
+#bsseq_all <- readRDS( file.path(input.dir ,"bsseq", "bsseq_HSC_comb_snpRemoved_repMerged.rds"))
+#smooth data
+#bsseq_all_smooth <- BSmooth(bsseq_all, BPPARAM = MulticoreParam(workers = 3, progressbar = TRUE))
+#saveRDS(bsseq_all_smooth, file.path(input.dir ,"bsseq", "bsseq_HSC_comb_snpRemoved_repMerged_smoothed.rds"))
+bsseq_all_smooth <- readRDS(file.path(input.dir ,"bsseq", "bsseq_HSC_comb_snpRemoved_repMerged_smoothed.rds"))
 #load dmrs
 dmrs_final<- readRDS(file.path("/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200612_DMR_model_sub_repMerged", "dmrs_gr_sub_MethDiff.rds"))
 dmrs_normal<- readRDS(file.path( "/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200830_DMR_Model_CelltypeGroup_sub_cbHSC", "dmrs_gr_sub_MethDiff.rds"))
@@ -26,13 +29,19 @@ anno_original <-  readRDS("/omics/groups/OE0219/internal/tinat/raw_data_repo/ref
 anno_original_transcript_symbol <- data.frame(row.names=anno_original[anno_original$type =="transcript",]$transcript_id,
     SYMBOL=  anno_original[anno_original$type =="transcript",]$transcript_name)
 #prepare methylation data for plotting
-anno_meth <- granges(bsseq_all)
-meth_per_cpg <- bsseq::getMeth(bsseq_all, type = "raw")
-anno_patient <- pData(bsseq_all)
+anno_meth <- granges(bsseq_all_smooth)
+meth_per_cpg <- bsseq::getMeth(bsseq_all_smooth, type = "smooth")
+anno_patient <- pData(bsseq_all_smooth)
 
 #get different subgroup annotation
 meth_data_all <- anno_meth
 mcols(meth_data_all) <-  meth_per_cpg
+
+#get memory
+rm(anno_meth)
+rm(meth_per_cpg)
+rm(bsseq_all_smooth)
+gc()
 
 #color annotation
 all_patient<- c(as.character(anno_patient[anno_patient$Sample_Type=="tumor",]$Patient),as.character(anno_patient[anno_patient$Sample_Type=="normal",]$Tissue_Source))
@@ -47,7 +56,6 @@ all_color <- c(prenatal = "#252525", cordblood = "#737373", bonemarrow = "#ababa
 
 #parameters
 #region
-ext <- 5000 
 fontSize <- 12
 #select region
 #roi <- anno[grep("^FBP2$", anno$gene_name),][1,]
@@ -56,10 +64,12 @@ roi <- GRanges(
    ranges = IRanges(start = c(149780031, 26642500, 9895867, 109682438, 107805978, 208071775, 80271968, 111253926, 119289296, 9599998, 61716486),
                   end = c(149794830, 26651000, 9936715, 109710665, 107811844, 208119712, 80276186, 111264698, 119296214, 9711622, 61724653)))
 roi$transcript_id <- c("CD74", "CD52", "CD69", "CD164", "CD47", "CD34", "CD7", 
-    "CD96", "CD90/THY1", "ADAM17", "BEST1")
-    
+    "CD96", "CD90THY1", "ADAM17", "BEST1")
+
+for(j in c(1500, 5000)){
+    ext <- j
 #plot regions
-for (i in 6:length(roi)){
+for (i in 1:length(roi)){
     #Define Region
     lim <- c(start(roi[i,]), end(roi[i,]))
     Chr<- as.character(seqnames(roi[i,]))
@@ -91,18 +101,33 @@ for (i in 6:length(roi)){
 
     #Data Tracks
     #Methylation 
-    beta_genes<-  meth_data_all[meth_data_all %over% range,]
-    span <-20/length(beta_genes)
+    #beta_genes<-  meth_data_all[meth_data_all %over% range,]
+    #span <-20/length(beta_genes)
 
     meth_data_all_track <- DataTrack(range = meth_data_all, genome = "hg19",
         fontcolor.title="black", fontcolor.group="black",
         fontsize=fontSize,col.axis="black",ylim=c(-.05,1.05),
-        type = c("smooth"), chromosome = Chr, name = "WGBS",  span=span,
-        groups=all_patient,col=all_color, lwd=2, alpha=.8)     #confint
-
+        type = c("a"), chromosome = Chr, name = "WGBS",  #span=span,
+        groups=all_patient,col=all_color, lwd=2, alpha=.8,alpha.title=1)     #confint
 
     #Plot track
-    pdf(file.path("/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/locus_plots",paste0(roi[i,]$transcript_id, "_locus_","ext_",ext, "_Span",span,".pdf")), width = 10, height = 5)
+    #pdf(file.path("/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/locus_plots",paste0(roi[i,]$transcript_id, "_locus_","ext_",ext, "_Span",span,"_bsseqSmoot_line.pdf")), width = 10, height = 5)
+    pdf(file.path("/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/locus_plots",paste0(roi[i,]$transcript_id, "_locus_","ext_",ext,"_bsseqSmoot_line.pdf")), width = 10, height = 5)
+    plotTracks(list(itrack , getrack, grtrack_original, 
+        dmrs_HM, dmrs_HMvsNormal,dmrs_LMvsNormal,
+        meth_data_all_track),fontcolor.title="black",
+        from =lim[1]-ext, to = lim[2]+ext, chromosome=Chr)
+    dev.off()
+    #with dots
+    meth_data_all_track <- DataTrack(range = meth_data_all, genome = "hg19",
+        fontcolor.title="black", fontcolor.group="black",
+        fontsize=fontSize,col.axis="black",ylim=c(-.05,1.05),
+        type = c("a", "p"), chromosome = Chr, name = "WGBS",  #span=span,
+        groups=all_patient,col=all_color, lwd=2, alpha=.8,alpha.title=1)     #confint
+
+    #Plot track
+    #pdf(file.path("/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/locus_plots",paste0(roi[i,]$transcript_id, "_locus_","ext_",ext, "_Span",span,"_bsseqSmoot_line.pdf")), width = 10, height = 5)
+    pdf(file.path("/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/locus_plots",paste0(roi[i,]$transcript_id, "_locus_","ext_",ext,"_bsseqSmoot_line_point.pdf")), width = 10, height = 5)
     plotTracks(list(itrack , getrack, grtrack_original, 
         dmrs_HM, dmrs_HMvsNormal,dmrs_LMvsNormal,
         meth_data_all_track),fontcolor.title="black",
@@ -110,10 +135,10 @@ for (i in 6:length(roi)){
     dev.off()
 
     print(i)
+    }
+
+   print(j)
 }
-
-
-
 
 
 #get different subgroup annotation
