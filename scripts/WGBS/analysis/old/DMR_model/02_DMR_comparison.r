@@ -1,7 +1,7 @@
 #compare group comparison with model results
-dmrs_model <- readRDS("/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200608_DMR_model/dmrs_gr_sub_MethDiff_anno.rds")
-dmrs_model_reduced <- readRDS("/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200608_DMR_model/dmrs_gr_sub_MethDiff_anno_reduced.rds")
-dmrs_group <- readRDS("/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200519_DMR_HM_vs_LM/sig_dmrs_5in4_sub_anno.rds")
+dmrs_model <- readRDS("/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200608_DMR_model/dmrs_gr_sub_MethDiff_anno.rds")
+dmrs_model_reduced <- readRDS("/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200608_DMR_model/dmrs_gr_sub_MethDiff_anno_reduced.rds")
+dmrs_group <- readRDS("/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200519_DMR_HM_vs_LM/sig_dmrs_5in4_sub_anno.rds")
 
 #check for overlap ov everything
 #create new reduced bacckground with everything
@@ -16,8 +16,8 @@ for(i in names(FG)){
 regions <- as.data.frame(mcols(BG))
 #do plotting
 library(UpSetR)
-dir.create("/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200608_DMR_model/comparison_group/")
-pdf("/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200608_DMR_model/comparison_group/upset_all_comp.pdf", width=10, height=7)
+dir.create("/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200608_DMR_model/comparison_group/")
+pdf("/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200608_DMR_model/comparison_group/upset_all_comp.pdf", width=10, height=7)
 upset(regions, order.by = "freq", nsets=10, nintersects=20)
 dev.off()
 
@@ -34,6 +34,6 @@ for(i in names(FG)){
 regions <- as.data.frame(mcols(BG))
 #do plotting
 library(UpSetR)
-pdf("/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200608_DMR_model/comparison_group/upset_Epigenotype_comp.pdf", width=10, height=7)
+pdf("/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200608_DMR_model/comparison_group/upset_Epigenotype_comp.pdf", width=10, height=7)
 upset(regions, order.by = "freq", nsets=10, nintersects=20)
 dev.off()

@@ -3,7 +3,7 @@
 library(qusage)
 library(org.Hs.eg.db)
 library(EnsDb.Hsapiens.v75)
-msigdb <- read.gmt("/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/h.all.v7.1.symbols.gmt")
+msigdb <- read.gmt("/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/h.all.v7.1.symbols.gmt")
 
 #get promoter regions for all genes
 ENS <- EnsDb.Hsapiens.v75

@@ -22,8 +22,8 @@ library(ChIPpeakAnno)
 library(dendextend)
 library(data.table)
 #Directories
-output.dir <- "/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/bsseq"
-analysis.dir <-  "/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200612_ExplorAnal"
+output.dir <- "/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/bsseq"
+analysis.dir <-  "/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200612_ExplorAnal"
 
 #load data
 bsseq_all <- readRDS(file.path(output.dir , "bsseq_all_snpfil_sub_cov_repMerged.rds"))
@@ -46,12 +46,12 @@ pData(bsseq_all) <- pheno
 dmrs <- dmrs_final$EpigenotypeHM
 
 #new output directory
-analysis.dir <-  "/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200830_DMR_model_sub_repMerged"
+analysis.dir <-  "/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200830_DMR_model_sub_repMerged"
 dir.create(analysis.dir)
 
 #load classifier cpgs
-all <- fread("/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/classifier_cpgs/all.bed.txt")
-slected <- fread("/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/classifier_cpgs/selectd.bed")
+all <- fread("/omics/groups/OE0219/internal/jmmlc_pbat/data/classifier_cpgs/all.bed.txt")
+slected <- fread("/omics/groups/OE0219/internal/jmmlc_pbat/data/classifier_cpgs/selectd.bed")
 colnames(all)<- c("seqnames", "start", "strand")
 all$end <-all$start
 colnames(slected)<- c("seqnames", "start", "end","strand")

@@ -3,8 +3,8 @@ library(methrix)
 library(BSgenome.Hsapiens.UCSC.hg19)
 library(dplyr)
 #directories
-odcf.dir <- "/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/methylationCalls/"
-output.dir <- "/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/"
+odcf.dir <- "/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/methylationCalls/"
+output.dir <- "/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/"
 dir.create(output.dir,recursive=TRUE)
 
 #load reference CpGs

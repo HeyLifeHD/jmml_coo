@@ -19,8 +19,8 @@ library(dendextend)
 library(LOLA)
 
 #Directories
-input.dir <- "/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/"
-analysis.dir <-  "/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/201005_DMR_tumor_vs_normal_CelltypeGroup_sub_cbHSC"
+input.dir <- "/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/"
+analysis.dir <-  "/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/201005_DMR_tumor_vs_normal_CelltypeGroup_sub_cbHSC"
 dir.create(analysis.dir)
 
 #load data
@@ -29,7 +29,7 @@ dmrs_final<- readRDS(file.path(analysis.dir, "dmrs_gr_sub_MethDiff_anno.rds"))
 dmrs_red<- readRDS(file.path(analysis.dir, "dmrs_gr_sub_MethDiff_anno_reduced.rds"))
 
 #load HSC DMRs
-dmrs_HSC_red<- readRDS(file.path( "/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200801_DMR_hierachy_HSC_comb", "sig_dmrs_5inHalf_sub_anno_reduced.rds"))
+dmrs_HSC_red<- readRDS(file.path( "/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200801_DMR_hierachy_HSC_comb", "sig_dmrs_5inHalf_sub_anno_reduced.rds"))
 
 #create further subset
 dmrs_final_sub <- lapply(dmrs_final, function(x){
@@ -57,7 +57,7 @@ dmrs_final <- lapply(dmrs_final, function(x){
 #mcols(dmrs_final$all)$direction <- "hypo"
 
 #load expression data
-expr <- readRDS("/icgc/dkfzlsdf/analysis/C010/JMMLC/scRNA_Data/New/DEG/JMML-HCA_CB_Sampled-panJMML/JMML-HCA_CB_Sampled-CD34-HSC.DEG.rds")
+expr <- readRDS("/omics/groups/OE0219/internal/JMMLC/scRNA_Data/New/DEG/JMML-HCA_CB_Sampled-panJMML/JMML-HCA_CB_Sampled-CD34-HSC.DEG.rds")
 expr$SYMBOL <- expr$gene
 
 #merge data

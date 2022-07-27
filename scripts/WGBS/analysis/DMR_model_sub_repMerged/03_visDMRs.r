@@ -16,10 +16,11 @@ library(VennDiagram)
 library(ChIPpeakAnno)
 library(dendextend)
 library(pheatmap)
+library(scico)
 
 #Directories
-output.dir <- "/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/bsseq"
-analysis.dir <-  "/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200612_DMR_model_sub_repMerged"
+output.dir <- "/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/bsseq"
+analysis.dir <-  "/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200612_DMR_model_sub_repMerged"
 
 #load data
 bsseq_all <- readRDS(file.path(output.dir , "bsseq_all_snpfil_sub_cov_repMerged.rds"))
@@ -39,7 +40,7 @@ pheno$Tumor<- pheno$tumor
 pData(bsseq_all) <- pheno
 
 #new output directory
-analysis.dir <-  "/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200830_DMR_model_sub_repMerged"
+analysis.dir <-  "/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200830_DMR_model_sub_repMerged"
 dir.create(analysis.dir)
 
 #add reduced data for common analysis
@@ -331,6 +332,10 @@ for(i in names(dmrs_final)){
         clustering_distance_rows= "manhattan", clustering_method ="ward.D2",clustering_distance_cols= "manhattan", 
         scale="none",fontsize_row=5,  annotation_color=pbat_col,
         filename=file.path(analysis.dir,i, "visualization","Heatmap_DMRs_noScale_WarD2_Manhatten_both.pdf"))
+    pheatmap(meth_dmr,  annotation_col=as.data.frame(annovst),show_rownames=FALSE,show_colnames=FALSE, 
+        clustering_distance_rows= "manhattan", clustering_method ="ward.D2",clustering_distance_cols= "manhattan", 
+        scale="none",fontsize_row=5,  annotation_color=pbat_col,color=scico(30, palette = 'bilbao'),
+        filename=file.path(analysis.dir,i, "visualization","Heatmap_DMRs_noScale_WarD2_Manhatten_both_kackbraun.pdf"))
     print(i)
 }
 

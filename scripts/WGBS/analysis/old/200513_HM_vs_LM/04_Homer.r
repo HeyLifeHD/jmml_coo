@@ -16,10 +16,10 @@ library(VennDiagram)
 library(ChIPpeakAnno)
 library(dendextend)
 #Directories
-input.dir <- "/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/"
-analysis.dir <-  "/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/DMR_sub"
+input.dir <- "/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/"
+analysis.dir <-  "/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/DMR_sub"
 input.dir <- "icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/"
-analysis.dir <-  "/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200512_DMR_HM_vs_LM"
+analysis.dir <-  "/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200512_DMR_HM_vs_LM"
 
 #load data
 bsseq_all <- readRDS(file.path(input.dir , "bsseq","bsseq_all_snpfil_sub.rds"))
@@ -52,7 +52,7 @@ for(i in names(dmrs_final)){
 }
 
 #run in command line
-cd /home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200512_DMR_HM_vs_LM
+cd /home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200512_DMR_HM_vs_LM
 conda activate homer2
 
 for file in `ls homer/*/DMRs.bed`#

@@ -24,8 +24,8 @@ library(data.table)
 library(parallel)
 #Directories
 #Directories
-output.dir <- "/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/bsseq"
-analysis.dir <-  "/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200612_ExplorAnal"
+output.dir <- "/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/bsseq"
+analysis.dir <-  "/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200612_ExplorAnal"
 
 #load data
 bsseq_all <- readRDS(file.path(output.dir , "bsseq_all_snpfil_sub_cov_repMerged.rds"))
@@ -45,11 +45,11 @@ pheno$Tumor<- pheno$tumor
 pData(bsseq_all) <- pheno
 
 #new output directory
-analysis.dir <-  "/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200830_DMR_model_sub_repMerged"
+analysis.dir <-  "/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200830_DMR_model_sub_repMerged"
 dir.create(analysis.dir)
 
 #prepare data for gene regulatory strat
-bed_files <- paste0("/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/roadmap_tracks_jmml/",list.files("/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/roadmap_tracks_jmml"))
+bed_files <- paste0("/omics/groups/OE0219/internal/jmmlc_pbat/data/roadmap_tracks_jmml/",list.files("/omics/groups/OE0219/internal/jmmlc_pbat/data/roadmap_tracks_jmml"))
 bed_files<-lapply(bed_files,function(x){
     x <- fread(x)
     x <- x[,1:4]

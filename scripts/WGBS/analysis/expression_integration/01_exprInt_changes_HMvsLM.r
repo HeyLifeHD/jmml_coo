@@ -19,9 +19,9 @@ library(pheatmap)
 
 #load my own data: Epigenotype vs HSC_cb
 #Directories
-input.dir <- "/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/"
-input_dmr.dir <-  "/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200612_DMR_model_sub_repMerged"
-analysis.dir <- "/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200826_expressionIntegration_changes"
+input.dir <- "/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/"
+input_dmr.dir <-  "/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200612_DMR_model_sub_repMerged"
+analysis.dir <- "/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200826_expressionIntegration_changes"
 dir.create(analysis.dir)
 
 #load data
@@ -31,7 +31,7 @@ dmrs_red<- readRDS(file.path(input_dmr.dir, "dmrs_gr_sub_MethDiff_anno_reduced.r
 
 
 #load expression data
-files <- list.files(path="/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/expression/200825_DEG/HM_vs_LM/", pattern=".csv", full.names=TRUE)
+files <- list.files(path="/omics/groups/OE0219/internal/jmmlc_pbat/data/expression/200825_DEG/HM_vs_LM/", pattern=".csv", full.names=TRUE)
 expr <- as.data.frame(data.table::fread(files))
 expr$SYMBOL <- expr$gene
 
@@ -137,7 +137,7 @@ dev.off()
 #all data
 
 #load expression data
-files <- list.files(path="/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/expression/200825_DEG/HM_vs_LM/", pattern=".rds", full.names=TRUE)
+files <- list.files(path="/omics/groups/OE0219/internal/jmmlc_pbat/data/expression/200825_DEG/HM_vs_LM/", pattern=".rds", full.names=TRUE)
 expr <- as.data.frame(readRDS(files))
 expr$SYMBOL <- expr$gene
 

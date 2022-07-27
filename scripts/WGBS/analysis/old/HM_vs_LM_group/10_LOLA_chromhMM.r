@@ -23,9 +23,9 @@ library(dendextend)
 library(LOLA)
 library(data.table)
 #Directories
-odcf.dir <- "/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/methylationCalls/"
-input.dir <- "/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/"
-analysis.dir <-  "/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200519_DMR_HM_vs_LM"
+odcf.dir <- "/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/methylationCalls/"
+input.dir <- "/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/"
+analysis.dir <-  "/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200519_DMR_HM_vs_LM"
 
 datasets.dir <- "c010-datasets/Internal/COPD/enrichment_databases/"
 
@@ -36,7 +36,7 @@ dmrs <- readRDS(file.path(analysis.dir, "sig_dmrs_5in4_sub_anno.rds"))
 dmrs_final<- list(HM_vs_LM=dmrs)
 
 #prepare data for lola
-bed_files <- paste0("/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/roadmap_tracks_jmml/",list.files("/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/roadmap_tracks_jmml"))
+bed_files <- paste0("/omics/groups/OE0219/internal/jmmlc_pbat/data/roadmap_tracks_jmml/",list.files("/omics/groups/OE0219/internal/jmmlc_pbat/data/roadmap_tracks_jmml"))
 bed_files<-lapply(bed_files,function(x){
     x <- fread(x)
     x <- x[,1:4]

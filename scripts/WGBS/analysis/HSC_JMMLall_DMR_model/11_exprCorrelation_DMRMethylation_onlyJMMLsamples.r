@@ -20,8 +20,8 @@ library(pheatmap)
 
 #load my own data: Epigenotype vs HSC_cb
 #Directories
-input.dir <- "/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/"
-analysis.dir <-  "/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/201005_DMR_tumor_vs_normal_CelltypeGroup_sub_cbHSC"
+input.dir <- "/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/"
+analysis.dir <-  "/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/201005_DMR_tumor_vs_normal_CelltypeGroup_sub_cbHSC"
 dir.create(analysis.dir)
 
 #load data
@@ -30,7 +30,7 @@ dmrs_final<- readRDS(file.path(analysis.dir, "dmrs_gr_sub_MethDiff_anno.rds"))
 dmrs_red<- readRDS(file.path(analysis.dir, "dmrs_gr_sub_MethDiff_anno_reduced.rds"))
 
 #load HSC DMRs
-dmrs_HSC_red<- readRDS(file.path( "/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200801_DMR_hierachy_HSC_comb", "sig_dmrs_5inHalf_sub_anno_reduced.rds"))
+dmrs_HSC_red<- readRDS(file.path( "/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200801_DMR_hierachy_HSC_comb", "sig_dmrs_5inHalf_sub_anno_reduced.rds"))
 
 dmrs_final <- lapply(dmrs_final, function(x){
     x$peakID <- 1:length(x) 
@@ -55,7 +55,7 @@ dmrs_final <- c(dmrs_final, dmrs_final_sub,dmrs_final_sub2)
 
 
 #load expression data
-expr <- readRDS("/icgc/dkfzlsdf/analysis/C010/JMMLC/scRNA_Data/New/DEG/Statistics/HSC.PseudoBulk.rds")
+expr <- readRDS("/omics/groups/OE0219/internal/JMMLC/scRNA_Data/New/DEG/Statistics/HSC.PseudoBulk.rds")
 
 #loop over each dmr subset and run
 corr_res_sub <- list()
@@ -363,7 +363,7 @@ pheatmap::pheatmap(rna_sig[p$tree_row$order, p$tree_col$order],#color= RColorBre
 
 
 #make heatmap of hits that overlap with degs
-files <- list.files(path="/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/expression/200825_DEG/HM_vs_LM/", pattern=".csv", full.names=TRUE)
+files <- list.files(path="/omics/groups/OE0219/internal/jmmlc_pbat/data/expression/200825_DEG/HM_vs_LM/", pattern=".csv", full.names=TRUE)
 deg <- as.data.frame(data.table::fread(files))
 deg$SYMBOL <- deg$gene
 deg_sig <- deg[deg$p_val_adj < 0.05, ]

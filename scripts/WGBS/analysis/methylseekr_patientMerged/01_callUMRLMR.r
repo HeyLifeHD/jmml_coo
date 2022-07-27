@@ -7,8 +7,8 @@ library(ChIPseeker)
 library(ggpubr)
 #load my own data
 #Directories
-input.dir <- "/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/"
-methylseekr.dir <-  "/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200811_mergedPatientsHSCcb_methylseekr"
+input.dir <- "/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/"
+methylseekr.dir <-  "/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200811_mergedPatientsHSCcb_methylseekr"
 dir.create(analysis.dir)
 
 #load data

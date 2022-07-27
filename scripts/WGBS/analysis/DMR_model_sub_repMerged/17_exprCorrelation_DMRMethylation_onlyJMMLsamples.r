@@ -20,8 +20,8 @@ library(pheatmap)
 library(dplyr)
 
 #Directories
-input.dir <- "/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/"
-analysis.dir <-  "/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200612_DMR_model_sub_repMerged"
+input.dir <- "/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/"
+analysis.dir <-  "/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200612_DMR_model_sub_repMerged"
 
 #load data
 bsseq_all <- readRDS(file.path(input.dir , "bsseq","bsseq_all_snpfil_sub_cov_repMerged.rds"))
@@ -66,7 +66,7 @@ dmrs_final <- lapply(dmrs_final, function(x){
 saveRDS(dmrs_final, file.path(analysis.dir, "dmrs_gr_sub_MethDiff_anno.rds"))
 
 #load expression data
-expr <- readRDS("/icgc/dkfzlsdf/analysis/C010/JMMLC/scRNA_Data/New/DEG/Statistics/HSC.PseudoBulk.rds")
+expr <- readRDS("/omics/groups/OE0219/internal/JMMLC/scRNA_Data/New/DEG/Statistics/HSC.PseudoBulk.rds")
 
 #loop over each dmr subset and run
 corr_res_sub <- list()
@@ -293,7 +293,7 @@ pheatmap::pheatmap(rna_sig[p$tree_row$order, p$tree_col$order],color= RColorBrew
 
 #make heatmap of hits that overlap with degs
 #load deg data
-files <- list.files(path="/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/expression/200825_DEG/HM_vs_LM/", pattern=".rds", full.names=TRUE)
+files <- list.files(path="/omics/groups/OE0219/internal/jmmlc_pbat/data/expression/200825_DEG/HM_vs_LM/", pattern=".rds", full.names=TRUE)
 names(files)<- paste0("EpigenotypeHM")
 deg_sig <- lapply(files, function(x){
     x <-readRDS(x)

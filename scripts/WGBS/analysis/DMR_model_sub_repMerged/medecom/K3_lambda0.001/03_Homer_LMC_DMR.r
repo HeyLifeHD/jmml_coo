@@ -14,8 +14,8 @@ library(pheatmap)
 library(randomcoloR)
 library(MeDeCom)
 #directories
-output.dir <- "/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/bsseq"
-analysis.dir <-  "/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200612_DMR_model_sub_repMerged"
+output.dir <- "/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/bsseq"
+analysis.dir <-  "/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200612_DMR_model_sub_repMerged"
 
 #load seperated bsseq data
 #bsseq<- readRDS(file.path(output.dir, "bsseq.rds"))
@@ -69,7 +69,7 @@ for(i in names(dmr_LMC_list_unlist_hyper)){
 }
 
 #run in command line
-cd /home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200612_DMR_model_sub_repMerged/medecom/downstream_K3_lambda0.001/homer
+cd /home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200612_DMR_model_sub_repMerged/medecom/downstream_K3_lambda0.001/homer
 chmod 777 -R ./
 conda activate homer2
 
@@ -101,7 +101,7 @@ done
 
 
 #get motif locations
-cd /icgc/dkfzlsdf/analysis/C010/cancer_microenvironment/TAM/WGBS/analysis/BMDM_TAM_MG_onlyPBAT/DMR/medecom/downstream_K3_lambda0.001/homer
+cd /omics/groups/OE0219/internal/cancer_microenvironment/TAM/WGBS/analysis/BMDM_TAM_MG_onlyPBAT/DMR/medecom/downstream_K3_lambda0.001/homer
 #source activate homer
 conda activate homer2
 

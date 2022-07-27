@@ -22,8 +22,8 @@ library(ChIPpeakAnno)
 library(dendextend)
 
 #Directories
-output.dir <- "/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/bsseq"
-analysis.dir <-  "/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200612_DMR_model_sub_repMerged"
+output.dir <- "/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/bsseq"
+analysis.dir <-  "/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200612_DMR_model_sub_repMerged"
 
 #load data
 bsseq_all <- readRDS(file.path(output.dir , "bsseq_all_snpfil_sub_cov_repMerged.rds"))
@@ -61,7 +61,7 @@ for(i in names(dmrs_final)){
 }
 
 #run in command line
-cd /home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200612_DMR_model_sub_repMerged
+cd /home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200612_DMR_model_sub_repMerged
 chmod 777 -R ./
 conda activate homer2
 
@@ -75,7 +75,7 @@ done
 
 
 #with custom bg
-cd /home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200612_DMR_model_sub_repMerged
+cd /home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200612_DMR_model_sub_repMerged
 chmod 777 -R ./homer
 conda activate homer2
 
@@ -83,6 +83,6 @@ for file in `ls homer/*/DMRs.bed`
 do
     echo ${file}
     path=`dirname ${file}`
-    findMotifsGenome.pl ${file} hg19 ${path}_customBG -size given -preparsedDir ${path}/ -p 6 -bg /home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200612_DMR_model_sub_repMerged/EpigenotypeHM/random_BG/random_bg_merged.sorted.bed
+    findMotifsGenome.pl ${file} hg19 ${path}_customBG -size given -preparsedDir ${path}/ -p 6 -bg /home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200612_DMR_model_sub_repMerged/EpigenotypeHM/random_BG/random_bg_merged.sorted.bed
     echo ${path}
 done

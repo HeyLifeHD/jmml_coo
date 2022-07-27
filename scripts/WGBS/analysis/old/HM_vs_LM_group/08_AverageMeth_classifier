@@ -21,9 +21,9 @@ library(VennDiagram)
 library(ChIPpeakAnno)
 library(dendextend)
 #Directories
-odcf.dir <- "/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/methylationCalls/"
-input.dir <- "/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/"
-analysis.dir <-  "/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200519_DMR_HM_vs_LM"
+odcf.dir <- "/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/methylationCalls/"
+input.dir <- "/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/"
+analysis.dir <-  "/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200519_DMR_HM_vs_LM"
 
 data.dir <- "c010-datasets/Internal/mitotic_clock/data/"
 
@@ -32,8 +32,8 @@ bsseq_all <- readRDS(file.path(input.dir , "bsseq","bsseq_all_snpfil_sub_cov.rds
 dmrs <- readRDS(file.path(analysis.dir, "sig_dmrs_5in4_sub_anno.rds"))
 
 #load classifier cpgs
-all <- fread("/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/classifier_cpgs/all.bed.txt")
-slected <- fread("/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/classifier_cpgs/selectd.bed")
+all <- fread("/omics/groups/OE0219/internal/jmmlc_pbat/data/classifier_cpgs/all.bed.txt")
+slected <- fread("/omics/groups/OE0219/internal/jmmlc_pbat/data/classifier_cpgs/selectd.bed")
 colnames(all)<- c("seqnames", "start", "strand")
 all$end <-all$start
 colnames(slected)<- c("seqnames", "start", "end","strand")

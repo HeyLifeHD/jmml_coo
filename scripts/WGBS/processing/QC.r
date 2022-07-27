@@ -38,8 +38,8 @@ transform_sum <- function(DT, sum_cols){
 FOLDER <- "/icgc/dkfzlsdf/project/OE0219/JMMLC_PBAT/sequencing/whole_genome_bisulfite_tagmentation_sequencing/view-by-pid/"
 
 
-odcf.dir <- "/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/methylationCalls/"
-output.dir <- "/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/"
+odcf.dir <- "/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/methylationCalls/"
+output.dir <- "/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/"
 bdg_PBAT_files = dir(path = odcf.dir , recursive=TRUE,pattern = "chr.bedgraph$", full.names = TRUE)
 temp<-strsplit(bdg_PBAT_files, "_", fixed=TRUE)
 patient<- sapply(temp , function(x)x[9])
@@ -52,7 +52,7 @@ SampleID <- paste0(tumor,"_JMMLC_", patient, replicate)
 SampleID <- gsub("NA", "", SampleID)
 sample_anno_PBAT <- data.frame(SampleID=SampleID, 
     patient=patient, tumor=tumor)
-sample_anno_mark <- read.table(file.path("/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data", "sample_anno_mark.txt"), stringsAsFactors=FALSE, header=TRUE)
+sample_anno_mark <- read.table(file.path("/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data", "sample_anno_mark.txt"), stringsAsFactors=FALSE, header=TRUE)
 sample_anno_mark$SampleID <- sample_anno_mark$Name
 library(dplyr)
 sample_anno<- left_join(sample_anno_PBAT,sample_anno_mark)
@@ -114,7 +114,7 @@ global_methylation_sum <- global_methylation_sum[context=="CH", coverage:=NA]
 global_methylation_sum <- global_methylation_sum[,conversion_rate:=1-ratio]
 global_methylation_sum <- global_methylation_sum[context=="CG", conversion_rate:=NA]
 
-output.dir <- "/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/QC"
+output.dir <- "/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/QC"
 dir.create(output.dir)
 save.image(file.path(output.dir, "QC_data.RData"))
 

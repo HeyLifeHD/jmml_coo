@@ -67,7 +67,7 @@ plate_1_entities = [
 snakemake.snakemake(
         snakefile=smk_wgbs.get_snakefile_fp(),
         latency_wait=60,
-        configfiles=['/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/sc_methyl/210107_completeRun/config.yaml'],
+        configfiles=['/omics/groups/OE0219/internal/jmmlc_pbat/sc_methyl/210107_completeRun/config.yaml'],
         # Three config values are not usually specified in the YAML
         # Because they change for each run
         config=dict(
@@ -80,9 +80,9 @@ snakemake.snakemake(
         nodes=5000,
         restart_times=4,
         keepgoing=True,
-        jobscript="/icgc/dkfzlsdf/analysis/C010/scMeth_Workflow_Stephen/lsf-jobscript.sh",
-        cluster="/icgc/dkfzlsdf/analysis/C010/scMeth_Workflow_Stephen/lsf-submit.py",
-        cluster_status="/icgc/dkfzlsdf/analysis/C010/scMeth_Workflow_Stephen/lsf-status.py",
+        jobscript="/omics/groups/OE0219/internal/scMeth_Workflow_Stephen/lsf-jobscript.sh",
+        cluster="/omics/groups/OE0219/internal/scMeth_Workflow_Stephen/lsf-submit.py",
+        cluster_status="/omics/groups/OE0219/internal/scMeth_Workflow_Stephen/lsf-status.py",
         max_jobs_per_second=10,
         force_incomplete=True,
         dryrun=False#,

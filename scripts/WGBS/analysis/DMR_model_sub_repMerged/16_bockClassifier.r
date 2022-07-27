@@ -1,7 +1,10 @@
 #cell type prediction with bock celltype predictor
 #test only with bock data
-rm -r /home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200904_Celltype_Prediction_Bock/predict_Celltypes_testBock
-Rscript /home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/Bock_Celltype_Predictor/cell_type_predictor_code/cellTypePredictor.R --features /home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/Bock_Celltype_Predictor/cell_type_predictor_input/methMatrix.tsv --t /home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/Bock_Celltype_Predictor/cell_type_predictor_input/sampleAnnot.tsv --out /home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200904_Celltype_Prediction_Bock/predict_Celltypes_testBock
+rm -r /home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200904_Celltype_Prediction_Bock/predict_Celltypes_testBock
+Rscript /home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/Bock_Celltype_Predictor/cell_type_predictor_code/cellTypePredictor.R \
+--features /home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/Bock_Celltype_Predictor/cell_type_predictor_input/methMatrix.tsv \
+--t /home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/Bock_Celltype_Predictor/cell_type_predictor_input/sampleAnnot.tsv \
+--out /home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200904_Celltype_Prediction_Bock/predict_Celltypes_testBock
 
 #Libraries
 library(DSS)
@@ -23,10 +26,10 @@ library(dendextend)
 library(pheatmap)
 library(data.table)
 #Directories
-input.dir <- "/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/"
-input_DMR.dir <-  "/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200612_DMR_model_sub_repMerged"
+input.dir <- "/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/"
+input_DMR.dir <-  "/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200612_DMR_model_sub_repMerged"
 
-analysis.dir <- "/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_Bock"
+analysis.dir <- "/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_Bock"
 dir.create(analysis.dir)
 
 #with own normal reference and JmmL
@@ -36,7 +39,7 @@ pheno <- pData(bsseq_all)
 
 #read cell type region tation to extract methylation values
 library(data.table)
-input_regions <- fread("/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/cell_type_predictor_input/regionAnnot.tsv")
+input_regions <- fread("/omics/groups/OE0219/internal/jmmlc_pbat/data/cell_type_predictor_input/regionAnnot.tsv")
 input_regions <- makeGRangesFromDataFrame(as.data.frame(input_regions))
 # liftOver
 #get lift
@@ -68,19 +71,19 @@ write.table(pheno_new, file.path(analysis.dir, "sample__HSC_comb_snpRemoved_repM
     quote=FALSE, sep="\t", row.names=FALSE)   
 
 #run commandline cell type tation
-rm -r /home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_Bock/predict_Celltypes_JMML_HSCUlm
-Rscript /home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/Bock_Celltype_Predictor/cell_type_predictor_code/cellTypePredictor.R \
---features /home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_Bock/meth_HSC_comb_snpRemoved_repMerged_sub_cbHSC.tsv \
---annot /home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_Bock/sample__HSC_comb_snpRemoved_repMerged_sub_cbHSC.tsv \
---out /home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_Bock/predict_Celltypes_JMML_HSCUlm
+rm -r /home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_Bock/predict_Celltypes_JMML_HSCUlm
+Rscript /home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/Bock_Celltype_Predictor/cell_type_predictor_code/cellTypePredictor.R \
+--features /home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_Bock/meth_HSC_comb_snpRemoved_repMerged_sub_cbHSC.tsv \
+--annot /home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_Bock/sample__HSC_comb_snpRemoved_repMerged_sub_cbHSC.tsv \
+--out /home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_Bock/predict_Celltypes_JMML_HSCUlm
 
 
 
 #with Bock normal reference and JmmL
-analysis.dir <- "/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_BockTrain_Jmml"
+analysis.dir <- "/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_BockTrain_Jmml"
 dir.create(analysis.dir)
 #read cell type region tation to extract methylation values
-input_regions <- fread("/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/cell_type_predictor_input/regionAnnot.tsv")
+input_regions <- fread("/omics/groups/OE0219/internal/jmmlc_pbat/data/cell_type_predictor_input/regionAnnot.tsv")
 input_regions <- makeGRangesFromDataFrame(as.data.frame(input_regions))
 # liftOver
 #get lift
@@ -100,11 +103,11 @@ meth_predictorInput_jmml <- bsseq::getMeth(bsseq_all, regions= input_regions_19,
 
 #read bock normal references
 #methylation
-meth_bock <- fread("/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/Bock_Celltype_Predictor/cell_type_predictor_input/methMatrix.tsv")
+meth_bock <- fread("/omics/groups/OE0219/internal/jmmlc_pbat/data/Bock_Celltype_Predictor/cell_type_predictor_input/methMatrix.tsv")
 meth_bock<- as.data.frame(meth_bock)
 #subset regions that were used for liftover
 meth_bock_sub <- meth_bock[idx,]
-annno_bock <- fread("/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/Bock_Celltype_Predictor/cell_type_predictor_input/sampleAnnot.tsv")
+annno_bock <- fread("/omics/groups/OE0219/internal/jmmlc_pbat/data/Bock_Celltype_Predictor/cell_type_predictor_input/sampleAnnot.tsv")
 annno_bock<- as.data.frame(annno_bock)
 
 #subset only train data
@@ -135,11 +138,11 @@ write.table(meth_predictorInput, file.path(analysis.dir, "meth.tsv"),
     quote=FALSE, sep="\t", row.names=FALSE)
   
 #run commandline cell type tation
-rm -r /home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_BockTrain_Jmml/predictCelltype_TrainBock_ClassJMML/
-Rscript /home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/Bock_Celltype_Predictor/cell_type_predictor_code/cellTypePredictor.R \
---features /home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_BockTrain_Jmml/meth.tsv \
---annot /home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_BockTrain_Jmml/sample_anno.tsv \
---out /home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_BockTrain_Jmml/predictCelltype_TrainBock_ClassJMML/
+rm -r /home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_BockTrain_Jmml/predictCelltype_TrainBock_ClassJMML/
+Rscript /home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/Bock_Celltype_Predictor/cell_type_predictor_code/cellTypePredictor.R \
+--features /home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_BockTrain_Jmml/meth.tsv \
+--annot /home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_BockTrain_Jmml/sample_anno.tsv \
+--out /home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_BockTrain_Jmml/predictCelltype_TrainBock_ClassJMML/
 
 
 
@@ -147,7 +150,7 @@ Rscript /home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/Bock_Celltype_Pre
 analysis.dir <- "c"
 dir.create(analysis.dir)
 #read cell type region tation to extract methylation values
-input_regions <- fread("/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/cell_type_predictor_input/regionAnnot.tsv")
+input_regions <- fread("/omics/groups/OE0219/internal/jmmlc_pbat/data/cell_type_predictor_input/regionAnnot.tsv")
 input_regions <- makeGRangesFromDataFrame(as.data.frame(input_regions))
 # liftOver
 #get lift
@@ -167,11 +170,11 @@ meth_predictorInput_jmml <- bsseq::getMeth(bsseq_all, regions= input_regions_19,
 
 #read bock normal references
 #methylation
-meth_bock <- fread("/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/Bock_Celltype_Predictor/cell_type_predictor_input/methMatrix.tsv")
+meth_bock <- fread("/omics/groups/OE0219/internal/jmmlc_pbat/data/Bock_Celltype_Predictor/cell_type_predictor_input/methMatrix.tsv")
 meth_bock<- as.data.frame(meth_bock)
 #subset regions that were used for liftover
 meth_bock_sub <- meth_bock[idx,]
-annno_bock <- fread("/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/Bock_Celltype_Predictor/cell_type_predictor_input/sampleAnnot.tsv")
+annno_bock <- fread("/omics/groups/OE0219/internal/jmmlc_pbat/data/Bock_Celltype_Predictor/cell_type_predictor_input/sampleAnnot.tsv")
 annno_bock<- as.data.frame(annno_bock)
 annno_bock$class <- paste0(annno_bock$class, "_",annno_bock$cellSourceCurated )
 
@@ -207,28 +210,28 @@ write.table(meth_predictorInput, file.path(analysis.dir, "meth.tsv"),
     quote=FALSE, sep="\t", row.names=FALSE)
   
 #run commandline cell type tation
-rm -r /home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_BockTrain_Jmml/predictCelltype_TrainBock_ClassJMML/
-Rscript /home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/Bock_Celltype_Predictor/cell_type_predictor_code/cellTypePredictor.R \
---features /home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_BockTrain_Jmml/meth.tsv \
---annot /home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_BockTrain_Jmml/sample_anno.tsv \
---out /home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_BockTrain_Jmml/predictCelltype_TrainBock_ClassJMML/
+rm -r /home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_BockTrain_Jmml/predictCelltype_TrainBock_ClassJMML/
+Rscript /home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/Bock_Celltype_Predictor/cell_type_predictor_code/cellTypePredictor.R \
+--features /home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_BockTrain_Jmml/meth.tsv \
+--annot /home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_BockTrain_Jmml/sample_anno.tsv \
+--out /home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_BockTrain_Jmml/predictCelltype_TrainBock_ClassJMML/
 
 
 
 
 #with Bock normal reference alll and JmmL
-analysis.dir <- "/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_BockTrain_withOrigin_Jmml"
+analysis.dir <- "/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_BockTrain_withOrigin_Jmml"
 dir.create(analysis.dir)
 #read cell type region tation to extract methylation values
-input_regions <- fread("/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/cell_type_predictor_input/regionAnnot.tsv")
+input_regions <- fread("/omics/groups/OE0219/internal/jmmlc_pbat/data/cell_type_predictor_input/regionAnnot.tsv")
 input_regions <- makeGRangesFromDataFrame(as.data.frame(input_regions))
 #extract methylation levels
 meth_predictorInput_jmml <- bsseq::getMeth(bsseq_all, regions= input_regions, type = "raw", what=c("perRegion"))
 
 #read bock normal references
-meth_bock <- fread("/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/Bock_Celltype_Predictor/cell_type_predictor_input/methMatrix.tsv")
+meth_bock <- fread("/omics/groups/OE0219/internal/jmmlc_pbat/data/Bock_Celltype_Predictor/cell_type_predictor_input/methMatrix.tsv")
 meth_bock<- as.data.frame(meth_bock)
-annno_bock <- fread("/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/Bock_Celltype_Predictor/cell_type_predictor_input/sampleAnnot.tsv")
+annno_bock <- fread("/omics/groups/OE0219/internal/jmmlc_pbat/data/Bock_Celltype_Predictor/cell_type_predictor_input/sampleAnnot.tsv")
 annno_bock<- as.data.frame(annno_bock)
 annno_bock$class <- paste0(annno_bock$class, "_",annno_bock$cellSourceCurated )
 #subset only train data
@@ -265,26 +268,26 @@ write.table(meth_predictorInput, file.path(analysis.dir, "meth.tsv"),
     quote=FALSE, sep="\t", row.names=FALSE)
   
 #run commandline cell type tation
-rm -r /home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_BockTrain_withOrigin_Jmml/predictCelltype_TrainBock_ClassJMML/
-Rscript /home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/Bock_Celltype_Predictor/cell_type_predictor_code/cellTypePredictor.R \
---features /home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_BockTrain_withOrigin_Jmml/meth.tsv \
---annot /home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_BockTrain_withOrigin_Jmml/sample_anno.tsv \
---out /home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_BockTrain_withOrigin_Jmml/predictCelltype_TrainBock_ClassJMML/
+rm -r /home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_BockTrain_withOrigin_Jmml/predictCelltype_TrainBock_ClassJMML/
+Rscript /home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/Bock_Celltype_Predictor/cell_type_predictor_code/cellTypePredictor.R \
+--features /home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_BockTrain_withOrigin_Jmml/meth.tsv \
+--annot /home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_BockTrain_withOrigin_Jmml/sample_anno.tsv \
+--out /home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_BockTrain_withOrigin_Jmml/predictCelltype_TrainBock_ClassJMML/
 
 
 #with Bock normal reference alll and JmmL and our normal references
-analysis.dir <- "/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_BockTrain_withOrigin_Jmml_ourNormal"
+analysis.dir <- "/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_BockTrain_withOrigin_Jmml_ourNormal"
 dir.create(analysis.dir)
 #read cell type region tation to extract methylation values
-input_regions <- fread("/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/cell_type_predictor_input/regionAnnot.tsv")
+input_regions <- fread("/omics/groups/OE0219/internal/jmmlc_pbat/data/cell_type_predictor_input/regionAnnot.tsv")
 input_regions <- makeGRangesFromDataFrame(as.data.frame(input_regions))
 #extract methylation levels
 meth_predictorInput_jmml <- bsseq::getMeth(bsseq_all, regions= input_regions, type = "raw", what=c("perRegion"))
 
 #read bock normal references
-meth_bock <- fread("/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/Bock_Celltype_Predictor/cell_type_predictor_input/methMatrix.tsv")
+meth_bock <- fread("/omics/groups/OE0219/internal/jmmlc_pbat/data/Bock_Celltype_Predictor/cell_type_predictor_input/methMatrix.tsv")
 meth_bock<- as.data.frame(meth_bock)
-annno_bock <- fread("/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/Bock_Celltype_Predictor/cell_type_predictor_input/sampleAnnot.tsv")
+annno_bock <- fread("/omics/groups/OE0219/internal/jmmlc_pbat/data/Bock_Celltype_Predictor/cell_type_predictor_input/sampleAnnot.tsv")
 annno_bock<- as.data.frame(annno_bock)
 annno_bock$class <- paste0(annno_bock$class, "_",annno_bock$cellSourceCurated )
 #subset only train data
@@ -321,11 +324,11 @@ write.table(meth_predictorInput, file.path(analysis.dir, "meth.tsv"),
     quote=FALSE, sep="\t", row.names=FALSE)
   
 #run commandline cell type tation
-rm -r /home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_BockTrain_withOrigin_Jmml_ourNormal/predictCelltype_TrainBock_ClassJMML/
-Rscript /home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/Bock_Celltype_Predictor/cell_type_predictor_code/cellTypePredictor.R \
---features /home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_BockTrain_withOrigin_Jmml_ourNormal/meth.tsv \
---annot /home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_BockTrain_withOrigin_Jmml_ourNormal/sample_anno.tsv \
---out /home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_BockTrain_withOrigin_Jmml_ourNormal/predictCelltype_TrainBock_ClassJMML/
+rm -r /home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_BockTrain_withOrigin_Jmml_ourNormal/predictCelltype_TrainBock_ClassJMML/
+Rscript /home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/Bock_Celltype_Predictor/cell_type_predictor_code/cellTypePredictor.R \
+--features /home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_BockTrain_withOrigin_Jmml_ourNormal/meth.tsv \
+--annot /home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_BockTrain_withOrigin_Jmml_ourNormal/sample_anno.tsv \
+--out /home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200925_Celltype_Prediction_BockTrain_withOrigin_Jmml_ourNormal/predictCelltype_TrainBock_ClassJMML/
 
 
 

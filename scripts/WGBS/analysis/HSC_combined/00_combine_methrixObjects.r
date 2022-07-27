@@ -4,10 +4,10 @@
 library(methrix)
 library(bsseq)
 #directories
-output.dir <- "/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/"
+output.dir <- "/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/"
 
 #load jmml dataset
-meth_jmml <- readRDS(file.path("/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/" ,"methrix",  "methrix_snpRemoved.rds"))
+meth_jmml <- readRDS(file.path("/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/" ,"methrix",  "methrix_snpRemoved.rds"))
 #do changes that were previously done in bsseq object
 meth_jmml <- meth_jmml[,!colnames(meth_jmml) %in% c("tumor11_JMMLC_D129_1","tumor11_JMMLC_D117", "tumor00_JMMLC_D123", "tumor10_JMMLC_D123",
     "tumor01_JMMLC_D123", "tumor00_JMMLC_D124", "tumor01_JMMLC_D117")] 

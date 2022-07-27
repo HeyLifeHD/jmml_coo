@@ -1,6 +1,6 @@
 #Directories
-output.dir <- "/icgc/dkfzlsdf/analysis/C010/cancer_microenvironment/TAM/WGBS/analysis/BMDM_TAM_MG_onlyPBAT/bsseq"
-analysis.dir <-  "/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200608_DMR_model"
+output.dir <- "/omics/groups/OE0219/internal/cancer_microenvironment/TAM/WGBS/analysis/BMDM_TAM_MG_onlyPBAT/bsseq"
+analysis.dir <-  "/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200608_DMR_model"
 
 #Libraries
 library(DSS)

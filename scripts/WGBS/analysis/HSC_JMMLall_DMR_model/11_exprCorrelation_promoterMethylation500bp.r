@@ -21,8 +21,8 @@ library(dplyr)
 
 #load my own data
 #Directories
-input.dir <- "/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/"
-analysis.dir <-  "/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/201005_DMR_tumor_vs_normal_CelltypeGroup_sub_cbHSC"
+input.dir <- "/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/"
+analysis.dir <-  "/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/201005_DMR_tumor_vs_normal_CelltypeGroup_sub_cbHSC"
 dir.create(analysis.dir)
 
 #load methylation data
@@ -45,7 +45,7 @@ mcols(prom)<- cbind(mcols(prom), meth_prom)
 #prom <- readRDS(file.path(input.dir ,"bsseq", "PromoterMeth_HSC_comb_snpRemoved_repMerged_sub_cbHSC_comparison.rds"))
 
 #load expression data
-expr <- readRDS("/icgc/dkfzlsdf/analysis/C010/JMMLC/scRNA_Data/New/DEG/Statistics/HSC.PseudoBulk.rds")
+expr <- readRDS("/omics/groups/OE0219/internal/JMMLC/scRNA_Data/New/DEG/Statistics/HSC.PseudoBulk.rds")
 #select expressed promoters
 expr_sub <- expr[rownames(expr) %in%  prom$gene_id,]
 prom_sub <- as.data.frame(mcols(prom))

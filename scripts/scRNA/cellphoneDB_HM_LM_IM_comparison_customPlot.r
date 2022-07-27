@@ -9,7 +9,7 @@ output.dir <- file.path(base.dir, "custom_plots")
 dir.create(output.dir)
 
 #load expression data
-files <- list.files(path="/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/expression/200825_DEG/HM_vs_LM/", pattern=".csv", full.names=TRUE)
+files <- list.files(path="/omics/groups/OE0219/internal/jmmlc_pbat/data/expression/200825_DEG/HM_vs_LM/", pattern=".csv", full.names=TRUE)
 expr <- as.data.frame(data.table::fread(files))
 expr$SYMBOL <- expr$gene
 #subset by padj

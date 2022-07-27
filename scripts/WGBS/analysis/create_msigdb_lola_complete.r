@@ -7,9 +7,9 @@ library(LOLA)
 #Directories
 datasets.dir <- "/home/heyj/c010-datasets/Internal/COPD/enrichment_databases/"
 
-msigdb <- read.gmt("/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/h.all.v7.1.symbols.gmt")
+msigdb <- read.gmt("/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/h.all.v7.1.symbols.gmt")
 
-msigdb <- list.files("/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/msigdb_collections", pattern="gmt", recursive=TRUE, full.names=TRUE)
+msigdb <- list.files("/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/msigdb_collections", pattern="gmt", recursive=TRUE, full.names=TRUE)
 temp <- sapply(strsplit(msigdb, "/"), "[", 11)
 temp <- sapply(strsplit(temp, ".symbols"), "[", 1)
 names(msigdb)<- temp

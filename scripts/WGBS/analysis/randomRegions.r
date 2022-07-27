@@ -1,11 +1,11 @@
-mkdir /home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200612_DMR_model_sub_repMerged/EpigenotypeHM/random_BG/ 
+mkdir /home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200612_DMR_model_sub_repMerged/EpigenotypeHM/random_BG/ 
 #run script
-Rscript /home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/scripts/randomRegions.R /home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200612_DMR_model_sub_repMerged/tracks/dmrs_sub_MethDiff_EpigenotypeHM.bed \
-/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200612_DMR_model_sub_repMerged/EpigenotypeHM/random_BG \
+Rscript /home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/scripts/randomRegions.R /home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200612_DMR_model_sub_repMerged/tracks/dmrs_sub_MethDiff_EpigenotypeHM.bed \
+/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200612_DMR_model_sub_repMerged/EpigenotypeHM/random_BG \
 14000
 
 #sort bed files
-cd /home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200612_DMR_model_sub_repMerged/EpigenotypeHM/random_BG \
+cd /home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200612_DMR_model_sub_repMerged/EpigenotypeHM/random_BG \
 
 conda activate betools
 for file in `ls ./*bed`
@@ -44,8 +44,8 @@ if (length(args) != 4) {
 }
 
 #template.dir <- args[1] # contains the bed files to be used as templates
-#bed.file <- "/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200612_DMR_model_sub_repMerged/tracks/dmrs_sub_MethDiff_EpigenotypeHM.bed"
-#out.dir <- "/home/heyj/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200612_DMR_model_sub_repMerged/EpigenotypeHM/random_BG " # main directory in which output will be written.
+#bed.file <- "/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200612_DMR_model_sub_repMerged/tracks/dmrs_sub_MethDiff_EpigenotypeHM.bed"
+#out.dir <- "/home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200612_DMR_model_sub_repMerged/EpigenotypeHM/random_BG " # main directory in which output will be written.
 #min.seq <- 15000 # number of random sets
 
 #template.dir <- args[1] # contains the bed files to be used as templates

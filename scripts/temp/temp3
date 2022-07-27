@@ -1,0 +1,46 @@
+#Libraries
+library(MethylSeekR)
+library(parallel)
+library(bsseq)
+library(BSgenome.Hsapiens.UCSC.hg19)
+library(ChIPseeker)
+library(ggpubr)
+#load my own data
+#Directories
+input.dir <- "/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/"
+methylseekr.dir <-  "/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200811_mergedPatientsHSCcb_methylseekr"
+dir.create(analysis.dir)
+
+UMRLMRsegments.gr <- readRDS(file.path(methylseekr.dir,  paste0("UMRsLMRs", ".rds")))
+head(UMRLMRsegments.gr[[i]])
+lapply(UMRLMRsegments.gr, length)
+
+#same for only hsc-cb as healthy reference
+samples <- names(UMRLMRsegments.gr)
+samples_sub <- samples[1:9]
+UMRLMRsegments.gr_sub <- UMRLMRsegments.gr[samples_sub]
+#look at overlap of lmr
+LMRsegments.gr <- lapply(UMRLMRsegments.gr_sub , function(x){
+    x <- x[x$type=="LMR",]
+    x
+})
+
+red_LMR <- reduce(unlist(GRangesList(LMRsegments.gr )))
+length(red_LMR)
+for(i in names(LMRsegments.gr)){
+    mcols(red_LMR)[,i] <- 0
+    mcols(red_LMR[queryHits(findOverlaps(red_LMR, LMRsegments.gr [[i]])),])[,i]  <- 1
+}
+
+#look at overlap of umr
+UMRsegments.gr <- lapply(UMRLMRsegments.gr_sub , function(x){
+    x <- x[x$type=="UMR",]
+    x
+})
+
+red_UMR <- reduce(unlist(GRangesList(UMRsegments.gr )))
+length(red_UMR)
+for(i in names(UMRsegments.gr)){
+    mcols(red_UMR)[,i] <- 0
+    mcols(red_UMR[queryHits(findOverlaps(red_UMR, UMRsegments.gr [[i]])),])[,i]  <- 1
+}

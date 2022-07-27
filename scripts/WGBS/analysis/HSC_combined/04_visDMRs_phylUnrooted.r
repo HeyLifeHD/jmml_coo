@@ -531,8 +531,8 @@ plot.phylo2 = function (x, type = "phylogram", use.edge.length = TRUE, node.pos 
 
 
 #Directories
-input.dir <- "/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/"
-analysis.dir <-  "/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200801_DMR_hierachy_HSC_comb"
+input.dir <- "/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/"
+analysis.dir <-  "/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200801_DMR_hierachy_HSC_comb"
 
 #load data
 bsseq_all <- readRDS(file.path(input.dir ,"bsseq", "bsseq_HSC_comb_snpRemoved_repMerged.rds"))
@@ -541,7 +541,7 @@ dmrs_red<- readRDS(file.path(analysis.dir, "sig_dmrs_5inHalf_sub_anno_reduced.rd
 
 
 #new output folder
-analysis.dir <-  "/icgc/dkfzlsdf/analysis/C010/jmmlc_pbat/data/odcf_md/analysis/200830_DMR_hierachy_HSC_comb"
+analysis.dir <-  "/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200830_DMR_hierachy_HSC_comb"
 
 #add reduced data for common analysis
 dmrs_final <- lapply(dmrs_final, function(x){
