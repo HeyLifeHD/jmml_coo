@@ -336,6 +336,10 @@ for(i in names(dmrs_final)){
         clustering_distance_rows= "manhattan", clustering_method ="ward.D2",clustering_distance_cols= "manhattan", 
         scale="none",fontsize_row=5,  annotation_color=pbat_col,color=scico(30, palette = 'bilbao'),
         filename=file.path(analysis.dir,i, "visualization","Heatmap_DMRs_noScale_WarD2_Manhatten_both_kackbraun.pdf"))
+    pheatmap(meth_dmr,  annotation_col=as.data.frame(annovst),show_rownames=FALSE,show_colnames=FALSE, 
+        clustering_distance_rows= "manhattan", clustering_method ="ward.D2",clustering_distance_cols= "manhattan", 
+        scale="none",fontsize_row=5,  annotation_color=pbat_col,color=colorRampPalette(c("#00627B", "#F2EAD6", "#BE3108"))(50),
+        filename=file.path(analysis.dir,i, "visualization","Heatmap_DMRs_noScale_WarD2_Manhatten_both_kackbraunDieZweite.pdf"))
     print(i)
 }
 

@@ -24,12 +24,21 @@ library(parallel)
 #Directories
 output.dir <- "/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/bsseq"
 analysis.dir <-  "/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200612_DMR_model_sub_repMerged"
+#RNAseq Directories
+base.dir<- "/omics/groups/OE0219/internal/jmmlc_rnaseq/220805_rnaseq_knownDEG"
+base_results.dir <- file.path(base.dir, "results")
+results.dir<- file.path(base_results.dir , "tables")
+PreDE.dir <- file.path(base_results.dir,"PreDE")
+PostDE.dir <- file.path(base_results.dir,"PostDE")
 
 #load data
 #bsseq_all <- readRDS(file.path(output.dir , "bsseq_all_snpfil_sub_cov_repMerged.rds"))
 dmrs_final<- readRDS(file.path(analysis.dir, "dmrs_gr_sub_MethDiff.rds"))
 dmrs_red<- readRDS(file.path(analysis.dir, "dmrs_gr_sub_MethDiff_anno_reduced.rds"))
 
+#load rna seq data
+DEG_results_list<- readRDS(file.path(PostDE.dir, "DEG_results_group_list.rds"))
+names(DEG_results_list)<- "EpigenotypeHM"
 
 #functions
 label_func <- function(x){
@@ -65,7 +74,7 @@ bubblePlot <- function(data){
 knownRes <- list.files(file.path(analysis.dir, "homer"), pattern="knownResults$", full.names = TRUE, recursive = TRUE, include.dirs= TRUE)
 knownRes <- gsub("knownResults", "", knownRes)
 knownRes <- knownRes[grep("all",knownRes, invert=TRUE)]
-knownRes <- knownRes[grep("customBG",knownRes, invert=FALSE)]
+knownRes <- knownRes[grep("customBG",knownRes, invert=TRUE)]
 
 names_knownRes <- strsplit(knownRes, "/", fixed=TRUE)
 names_knownRes_sub <- sapply(names_knownRes, function(x) paste0(x[12]))
@@ -75,183 +84,23 @@ homer_list <- lapply(knownRes, function(x)read_homer_output(x))
 DAR_list <- list()
 DAR_list$EpigenotypeHM <- homer_list
 
-dir.create(file.path(analysis.dir,"homer"))
-
-
-#plot all sig motifs
-DAR_list_sub <- list()
-DAR_list_sub_sig <- list()
-DAR_list_sub_plot<-list()
-for (i in names(DAR_list)){
-    DAR_list_sub[[i]]<- lapply(DAR_list[[i]], function(x){
-    x$known_motif_table$MotifName <- sapply(strsplit(x$known_motif_table$motif_name ,"(", fixed=TRUE),`[`, 1)
-    x$known_motif_table$MotifName <- sapply(strsplit(x$known_motif_table$MotifName ,"/", fixed=TRUE),`[`, 1)
-    x$known_motif_table$MotifName <- toupper(x$known_motif_table$MotifName)
-    #result.df<- DEG_results_list[[i]]
-    #result.df$mgi_symbol  <- toupper(rownames(result.df))
-    #x$known_motif_table <- x$known_motif_table[which(x$known_motif_table$MotifName %in% unique(result.df$mgi_symbol)), ]
-    #x$known_motif_table$p.adjusted <- p.adjust(exp(x$known_motif_table$log_p_value), "BH")
-    #x$known_motif_table$log_p.adjusted_neg <- -(log10(x$known_motif_table$p.adjusted))
-    x$known_motif_table$log_p.adjusted_neg <- -(x$known_motif_table$log_p_value)
-    x
-    })
-    DAR_list_sub_sig[[i]]<- lapply(DAR_list_sub[[i]], function(x){
-    #x <- x$known_motif_table[which(x$known_motif_table$p.adjusted < 0.1),]
-    x <- as.data.frame(x$known_motif_table)
-    #x <- x[which(x$p.adjusted < 0.05),]
-    x
-    })
-    DAR_list_sub_plot[[i]] <- DAR_list_sub_sig[[i]]
-    for (j in names(DAR_list_sub_plot[[i]])){
-        DAR_list_sub_plot[[i]][[j]]$direction <- j
-        #DAR_list_sub_plot[[i]][[j]] <-  as.data.frame(DAR_list_sub_plot[[i]][[j]]$known_motif_table)
-        DAR_list_sub_plot[[i]][[j]] <- DAR_list_sub_plot[[i]][[j]][,c("motif_name", "q_value_benjamini", 
-        "percent_of_target_sequences_with_motif","percent_of_background_sequences_with_motif",
-        "MotifName","log_p.adjusted_neg" , "direction")]
-    }
-
-    DAR_list_sub_plot[[i]]<- do.call("rbind", DAR_list_sub_plot[[i]])
-    sig <- DAR_list_sub_plot[[i]][DAR_list_sub_plot[[i]]$q_value_benjamini < 0.05, ]$MotifName
-    DAR_list_sub_plot[[i]] <- DAR_list_sub_plot[[i]][DAR_list_sub_plot[[i]]$MotifName %in% sig, ]
-    
-    pdf(file.path(analysis.dir,"homer", paste0("HomerBubble_all_qval0.05.pdf")), height=40)
-    print(bubblePlot(DAR_list_sub_plot[[i]])+ggtitle(i))
-    dev.off()
-}
-
-
-#top 10 hypo + hyper 
-DAR_list_sub <- list()
-DAR_list_sub_sig <- list()
-DAR_list_sub_plot<-list()
-for (i in names(DAR_list)){
-    DAR_list_sub[[i]]<- lapply(DAR_list[[i]], function(x){
-    x$known_motif_table$MotifName <- sapply(strsplit(x$known_motif_table$motif_name ,"(", fixed=TRUE),`[`, 1)
-    x$known_motif_table$MotifName <- sapply(strsplit(x$known_motif_table$MotifName ,"/", fixed=TRUE),`[`, 1)
-    x$known_motif_table$MotifName <- toupper(x$known_motif_table$MotifName)
-    #result.df<- DEG_results_list[[i]]
-    #result.df$mgi_symbol  <- toupper(rownames(result.df))
-    #x$known_motif_table <- x$known_motif_table[which(x$known_motif_table$MotifName %in% unique(result.df$mgi_symbol)), ]
-    #x$known_motif_table$p.adjusted <- p.adjust(exp(x$known_motif_table$log_p_value), "BH")
-    #x$known_motif_table$log_p.adjusted_neg <- -(log10(x$known_motif_table$p.adjusted))
-    x$known_motif_table$log_p.adjusted_neg <- -(x$known_motif_table$log_p_value)
-    x
-    })
-    DAR_list_sub_sig[[i]]<- lapply(DAR_list_sub[[i]], function(x){
-    #x <- x$known_motif_table[which(x$known_motif_table$p.adjusted < 0.1),]
-    x <- as.data.frame(x$known_motif_table)
-    #x <- x[which(x$p.adjusted < 0.05),]
-    x
-    })
-    sig <- list()
-    DAR_list_sub_plot[[i]] <- DAR_list_sub_sig[[i]]
-    for (j in names(DAR_list_sub_plot[[i]])){
-        DAR_list_sub_plot[[i]][[j]]$direction <- j
-        #DAR_list_sub_plot[[i]][[j]] <-  as.data.frame(DAR_list_sub_plot[[i]][[j]]$known_motif_table)
-        DAR_list_sub_plot[[i]][[j]] <- DAR_list_sub_plot[[i]][[j]][,c("motif_name",  "q_value_benjamini",
-        "percent_of_target_sequences_with_motif","percent_of_background_sequences_with_motif",
-        "MotifName","log_p.adjusted_neg" , "direction")]
-        sig[[j]]<-head(DAR_list_sub_plot[[i]][[j]]$MotifName,10)
-    }
-    sig <- unlist(sig)
-    DAR_list_sub_plot[[i]]<- do.call("rbind", DAR_list_sub_plot[[i]])
-    #sig <- DAR_list_sub_plot[[i]][DAR_list_sub_plot[[i]]$p.adjusted < 0.5, ]$MotifName
-
-    DAR_list_sub_plot[[i]] <- DAR_list_sub_plot[[i]][DAR_list_sub_plot[[i]]$MotifName %in% sig, ]
-
-    pdf(file.path(analysis.dir,"homer", paste0("HomerBubble_top10_qval0.05.pdf")), height=7)
-    print(bubblePlot(DAR_list_sub_plot[[i]])+ggtitle(i))
-    dev.off()
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#top 5 hypo + hyper 
-DAR_list_sub <- list()
-DAR_list_sub_sig <- list()
-DAR_list_sub_plot<-list()
-for (i in names(DAR_list)){
-    DAR_list_sub[[i]]<- lapply(DAR_list[[i]], function(x){
-    x$known_motif_table$MotifName <- sapply(strsplit(x$known_motif_table$motif_name ,"(", fixed=TRUE),`[`, 1)
-    x$known_motif_table$MotifName <- sapply(strsplit(x$known_motif_table$MotifName ,"/", fixed=TRUE),`[`, 1)
-    x$known_motif_table$MotifName <- toupper(x$known_motif_table$MotifName)
-    #result.df<- DEG_results_list[[i]]
-    #result.df$mgi_symbol  <- toupper(rownames(result.df))
-    #x$known_motif_table <- x$known_motif_table[which(x$known_motif_table$MotifName %in% unique(result.df$mgi_symbol)), ]
-    #x$known_motif_table$p.adjusted <- p.adjust(exp(x$known_motif_table$log_p_value), "BH")
-    #x$known_motif_table$log_p.adjusted_neg <- -(log10(x$known_motif_table$p.adjusted))
-    x$known_motif_table$log_p.adjusted_neg <- -(x$known_motif_table$log_p_value)
-    x
-    })
-    DAR_list_sub_sig[[i]]<- lapply(DAR_list_sub[[i]], function(x){
-    #x <- x$known_motif_table[which(x$known_motif_table$p.adjusted < 0.1),]
-    x <- as.data.frame(x$known_motif_table)
-    #x <- x[which(x$p.adjusted < 0.05),]
-    x
-    })
-    sig <- list()
-    DAR_list_sub_plot[[i]] <- DAR_list_sub_sig[[i]]
-    for (j in names(DAR_list_sub_plot[[i]])){
-        DAR_list_sub_plot[[i]][[j]]$direction <- j
-        #DAR_list_sub_plot[[i]][[j]] <-  as.data.frame(DAR_list_sub_plot[[i]][[j]]$known_motif_table)
-        DAR_list_sub_plot[[i]][[j]] <- DAR_list_sub_plot[[i]][[j]][,c("motif_name",  "q_value_benjamini",
-        "percent_of_target_sequences_with_motif","percent_of_background_sequences_with_motif",
-        "MotifName","log_p.adjusted_neg" , "direction")]
-        sig[[j]]<-head(DAR_list_sub_plot[[i]][[j]]$MotifName,5)
-    }
-    sig <- unlist(sig)
-    DAR_list_sub_plot[[i]]<- do.call("rbind", DAR_list_sub_plot[[i]])
-    #sig <- DAR_list_sub_plot[[i]][DAR_list_sub_plot[[i]]$p.adjusted < 0.5, ]$MotifName
-
-    DAR_list_sub_plot[[i]] <- DAR_list_sub_plot[[i]][DAR_list_sub_plot[[i]]$MotifName %in% sig, ]
-    
-    pdf(file.path(analysis.dir,"sub_finalComp", i, "homer_promoter3kb", paste0("HomerBubble_top5_qval0.05.pdf")), height=7, width=9)
-    print(bubblePlot(DAR_list_sub_plot[[i]])+ggtitle(i))
-    dev.off()
-
-}
-
-
-
-
-
-
-
-
-
 #plot all sig expressed motifs
 DAR_list_sub <- list()
 DAR_list_sub_sig <- list()
 DAR_list_sub_plot<-list()
 #sub necessary comparisons
 DAR_list_sel <- DAR_list[names(DEG_results_list)]
+
+#plot results
 for (i in names(DAR_list_sel)){
     DAR_list_sub[[i]]<- lapply(DAR_list_sel[[i]], function(x){
     x$known_motif_table$MotifName <- sapply(strsplit(x$known_motif_table$motif_name ,"(", fixed=TRUE),`[`, 1)
     x$known_motif_table$MotifName <- sapply(strsplit(x$known_motif_table$MotifName ,"/", fixed=TRUE),`[`, 1)
     x$known_motif_table$MotifName <- toupper(x$known_motif_table$MotifName)
     result.df<- DEG_results_list[[i]]
-    result.df$mgi_symbol  <- toupper(rownames(result.df))
-    x$known_motif_table <- x$known_motif_table[which(x$known_motif_table$MotifName %in% unique(result.df$mgi_symbol)), ]
+    result.df$gene_id  <- toupper(rownames(result.df))
+    x$known_motif_table <- x$known_motif_table[which(x$known_motif_table$MotifName %in% unique(result.df$gene_id)), ]
+    
     #x$known_motif_table$p.adjusted <- p.adjust(exp(x$known_motif_table$log_p_value), "BH")
     #x$known_motif_table$log_p.adjusted_neg <- -(log10(x$known_motif_table$p.adjusted))
     x$known_motif_table$log_p.adjusted_neg <- -(x$known_motif_table$log_p_value)
@@ -260,7 +109,7 @@ for (i in names(DAR_list_sel)){
     DAR_list_sub_sig[[i]]<- lapply(DAR_list_sub[[i]], function(x){
     #x <- x$known_motif_table[which(x$known_motif_table$p.adjusted < 0.1),]
     x <- as.data.frame(x$known_motif_table)
-    #x <- x[which(x$p.adjusted < 0.05),]
+    #x <- x[which(x$q_value_benjamini < 0.05),]
     x
     })
     DAR_list_sub_plot[[i]] <- DAR_list_sub_sig[[i]]
@@ -276,24 +125,22 @@ for (i in names(DAR_list_sel)){
     sig <- DAR_list_sub_plot[[i]][DAR_list_sub_plot[[i]]$q_value_benjamini < 0.05, ]$MotifName
     DAR_list_sub_plot[[i]] <- DAR_list_sub_plot[[i]][DAR_list_sub_plot[[i]]$MotifName %in% sig, ]
     
-    pdf(file.path(analysis.dir,"sub_finalComp", i, "homer_promoter3kb", paste0("HomerBubble_all_qval0.05_expressed.pdf")), height=40)
+    pdf(file.path(analysis.dir,"homer", paste0("HomerBubble_all_qval0.05_expressed.pdf")), height=40)
     print(bubblePlot(DAR_list_sub_plot[[i]])+ggtitle(i))
     dev.off()
 }
 
 #top 10 hypo + hyper of expresed
-DAR_list_sub <- list()
-DAR_list_sub_sig <- list()
-DAR_list_sub_plot<-list()
-DAR_list_sel <- DAR_list[names(DEG_results_list)]
+#plot results
 for (i in names(DAR_list_sel)){
     DAR_list_sub[[i]]<- lapply(DAR_list_sel[[i]], function(x){
     x$known_motif_table$MotifName <- sapply(strsplit(x$known_motif_table$motif_name ,"(", fixed=TRUE),`[`, 1)
     x$known_motif_table$MotifName <- sapply(strsplit(x$known_motif_table$MotifName ,"/", fixed=TRUE),`[`, 1)
     x$known_motif_table$MotifName <- toupper(x$known_motif_table$MotifName)
     result.df<- DEG_results_list[[i]]
-    result.df$mgi_symbol  <- toupper(rownames(result.df))
-    x$known_motif_table <- x$known_motif_table[which(x$known_motif_table$MotifName %in% unique(result.df$mgi_symbol)), ]
+    result.df$gene_id  <- toupper(rownames(result.df))
+    x$known_motif_table <- x$known_motif_table[which(x$known_motif_table$MotifName %in% unique(result.df$gene_id)), ]
+    
     #x$known_motif_table$p.adjusted <- p.adjust(exp(x$known_motif_table$log_p_value), "BH")
     #x$known_motif_table$log_p.adjusted_neg <- -(log10(x$known_motif_table$p.adjusted))
     x$known_motif_table$log_p.adjusted_neg <- -(x$known_motif_table$log_p_value)
@@ -302,9 +149,10 @@ for (i in names(DAR_list_sel)){
     DAR_list_sub_sig[[i]]<- lapply(DAR_list_sub[[i]], function(x){
     #x <- x$known_motif_table[which(x$known_motif_table$p.adjusted < 0.1),]
     x <- as.data.frame(x$known_motif_table)
-    #x <- x[which(x$p.adjusted < 0.05),]
+    #x <- x[which(x$q_value_benjamini < 0.05),]
     x
     })
+   
     sig <- list()
     DAR_list_sub_plot[[i]] <- DAR_list_sub_sig[[i]]
     for (j in names(DAR_list_sub_plot[[i]])){
@@ -321,21 +169,62 @@ for (i in names(DAR_list_sel)){
 
     DAR_list_sub_plot[[i]] <- DAR_list_sub_plot[[i]][DAR_list_sub_plot[[i]]$MotifName %in% sig, ]
     
-    pdf(file.path(analysis.dir,"sub_finalComp", i, "homer_promoter3kb", paste0("HomerBubble_top10_qval0.05_expressed.pdf")))
+    pdf(file.path(analysis.dir,"homer", paste0("HomerBubble_top10_qval0.05_expressed.pdf")))
     print(bubblePlot(DAR_list_sub_plot[[i]])+ggtitle(i))
     dev.off()
+}
 
+#plot tf motifs with tf expression being significant
+#plot results
+for (i in names(DAR_list_sel)){
+    DAR_list_sub[[i]]<- lapply(DAR_list_sel[[i]], function(x){
+    x$known_motif_table$MotifName <- sapply(strsplit(x$known_motif_table$motif_name ,"(", fixed=TRUE),`[`, 1)
+    x$known_motif_table$MotifName <- sapply(strsplit(x$known_motif_table$MotifName ,"/", fixed=TRUE),`[`, 1)
+    x$known_motif_table$MotifName <- toupper(x$known_motif_table$MotifName)
+    result.df<- DEG_results_list[[i]]
+    result.df <- result.df[which(result.df$padj < 0.05),]
+    result.df$gene_id  <- toupper(rownames(result.df))
+    x$known_motif_table <- x$known_motif_table[which(x$known_motif_table$MotifName %in% unique(result.df$gene_id)), ]
+    
+    #x$known_motif_table$p.adjusted <- p.adjust(exp(x$known_motif_table$log_p_value), "BH")
+    #x$known_motif_table$log_p.adjusted_neg <- -(log10(x$known_motif_table$p.adjusted))
+    x$known_motif_table$log_p.adjusted_neg <- -(x$known_motif_table$log_p_value)
+    x
+    })
+    DAR_list_sub_sig[[i]]<- lapply(DAR_list_sub[[i]], function(x){
+    #x <- x$known_motif_table[which(x$known_motif_table$p.adjusted < 0.1),]
+    x <- as.data.frame(x$known_motif_table)
+    #x <- x[which(x$q_value_benjamini < 0.05),]
+    x
+    })
+    DAR_list_sub_plot[[i]] <- DAR_list_sub_sig[[i]]
+    for (j in names(DAR_list_sub_plot[[i]])){
+        DAR_list_sub_plot[[i]][[j]]$direction <- j
+        #DAR_list_sub_plot[[i]][[j]] <-  as.data.frame(DAR_list_sub_plot[[i]][[j]]$known_motif_table)
+        DAR_list_sub_plot[[i]][[j]] <- DAR_list_sub_plot[[i]][[j]][,c("motif_name", "q_value_benjamini", 
+        "percent_of_target_sequences_with_motif","percent_of_background_sequences_with_motif",
+        "MotifName","log_p.adjusted_neg" , "direction")]
+    }
+
+    DAR_list_sub_plot[[i]]<- do.call("rbind", DAR_list_sub_plot[[i]])
+    sig <- DAR_list_sub_plot[[i]][DAR_list_sub_plot[[i]]$q_value_benjamini < 0.05, ]$MotifName
+    DAR_list_sub_plot[[i]] <- DAR_list_sub_plot[[i]][DAR_list_sub_plot[[i]]$MotifName %in% sig, ]
+    
+    pdf(file.path(analysis.dir,"homer", paste0("HomerBubble_all_qval0.05_TFexpressionPadj0.05.pdf")), height=14)
+    print(bubblePlot(DAR_list_sub_plot[[i]])+ggtitle(i))
+    dev.off()
 }
 
 
-#plot tf expression
-adjp <- 0.1
+
+
+#plot tf expression of significant TFs
+adjp <- 0.05
 known_TF_sig<- list()
 known_TF_sig_all<- list()
 known_TF_sig_all_mgi_symbol<- list()
 DAR_list_sel <- DAR_list[names(DEG_results_list)]
 #remove $BMDM_healthy_vs_BMDM_tumor due to now sig combination
-DAR_list_sel$BMDM_healthy_vs_BMDM_tumor <- NULL
 for(i in names(DAR_list_sel)){
     result.df<- DEG_results_list[[i]]
     result.sig <- result.df[which(result.df$padj < adjp), ]
@@ -345,7 +234,7 @@ for(i in names(DAR_list_sel)){
         known_TF <- DAR_list_sel[[i]][[j]]$known_motif_table
         known_TF <- known_TF[known_TF$q_value_benjamini < 0.05,]
         known_TF$MotifName <-  sapply(strsplit(as.character(known_TF$motif_name) ,"(", fixed=TRUE),`[`, 1)
-        known_TF$MotifName <-  sapply(strsplit(known_TF$MotifName ,"/", fixed=TRUE),`[`, 1)
+        known_TF$MotifName <-  toupper(sapply(strsplit(known_TF$MotifName ,"/", fixed=TRUE),`[`, 1))
         known_TF_sig[[j]] <- known_TF[which(known_TF$MotifName %in%  result.sig$mgi_symbol) ,]
     }
     known_TF_sig_all[[i]] <- known_TF_sig
@@ -353,42 +242,6 @@ for(i in names(DAR_list_sel)){
 }
 known_TF_sig_all_mgi_symbol
 
-#loop over comparisons a nd plot them
-DAR_list_sub <- list()
-DAR_list_sub_sig <- list()
-DAR_list_sub_plot<-list()
-for (i in names(known_TF_sig_all)){
-    DAR_list_sub[[i]]<- lapply(known_TF_sig_all[[i]], function(x){
-    x$log_p.adjusted_neg <- -(x$log_p_value)
-
-    x
-    })
-    DAR_list_sub_sig[[i]]<- lapply(DAR_list_sub[[i]], function(x){
-    #x <- x$known_motif_table[which(x$known_motif_table$p.adjusted < 0.1),]
-    #x <- x[which(x$p.adjusted < 0.05),]
-    x
-    })
-    sig <- list()
-    DAR_list_sub_plot[[i]] <- DAR_list_sub_sig[[i]]
-    for (j in names(DAR_list_sub_plot[[i]])){
-        DAR_list_sub_plot[[i]][[j]]$direction <- j
-        #DAR_list_sub_plot[[i]][[j]] <-  as.data.frame(DAR_list_sub_plot[[i]][[j]]$known_motif_table)
-        DAR_list_sub_plot[[i]][[j]] <- DAR_list_sub_plot[[i]][[j]][,c("motif_name",  "q_value_benjamini",
-        "percent_of_target_sequences_with_motif","percent_of_background_sequences_with_motif",
-        "MotifName","log_p.adjusted_neg" , "direction")]
-        sig[[j]]<-DAR_list_sub_plot[[i]][[j]]$MotifName
-    }
-    sig <- unlist(sig)
-    DAR_list_sub_plot[[i]]<- do.call("rbind", DAR_list_sub_plot[[i]])
-    #sig <- DAR_list_sub_plot[[i]][DAR_list_sub_plot[[i]]$p.adjusted < 0.5, ]$MotifName
-
-    DAR_list_sub_plot[[i]] <- DAR_list_sub_plot[[i]][DAR_list_sub_plot[[i]]$MotifName %in% sig, ]
-    
-    pdf(file.path(analysis.dir,"sub_finalComp", i, "homer_promoter3kb", paste0("HomerBubble_DEG_TF_expr_qval",adjp,".pdf")))
-    print(bubblePlot(DAR_list_sub_plot[[i]]))
-    dev.off()
-
-}
 
 #plot fold change of expression
 library(RColorBrewer)
@@ -400,7 +253,7 @@ for(i in names(DEG_results_list)){
     plot$SYMBOL <- rownames(plot)
     plot$Change <- ifelse(plot$log2FoldChange>0, "blue","red")
 
-    pdf(file.path(analysis.dir,"sub_finalComp", i, "homer_promoter3kb", paste0("DEG_TF_expr_qval",adjp,"_TF_barplot.pdf")), width=4)
+    pdf(file.path(analysis.dir,"homer", paste0("DEG_TF_expr_qval",adjp,"_TF_barplot.pdf")), width=4)
     print(ggbarplot(plot, x="SYMBOL", y="log2FoldChange",fill="Change",palette=col,ylab="log2 fold change" , order=rownames(plot)[order(rownames(plot), decreasing=TRUE)])
     + rremove("ylab")+ rremove("legend")+rotate_x_text(angle = 45)+ coord_flip() )
     dev.off()

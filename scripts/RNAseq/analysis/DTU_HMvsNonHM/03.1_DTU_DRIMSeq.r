@@ -75,6 +75,12 @@ d <- dmTest(d, coef="Epigenotypenon_HM")
 saveRDS(d, file.path(results.dir, "DRIMSeq_Object.rds"))
 d <- readRDS(file.path(results.dir, "DRIMSeq_Object.rds"))
 
+#save proportions and norm counts
+prop <- DRIMSeq::proportions(d)
+saveRDS(prop, file.path(results.dir, "proportions.rds"))
+coun <- DRIMSeq::counts(d)
+saveRDS(coun, file.path(results.dir, "counts.rds"))
+
 #extract results
 res <- DRIMSeq::results(d)
 head(res)
@@ -118,6 +124,7 @@ padj <- getAdjustedPValues(stageRObj, order = TRUE,
 onlySignificantGenes = FALSE)
 head(padj)
 write.table(padj, file.path(PostDE.dir, "StageR_adj_results.txt"), col.names=TRUE, row.names=FALSE, quote=FALSE)
+saveRDS(padj, file.path(PostDE.dir, "StageR_adj_results.rds"))
 
 #plot sign genes
 idx <- which(padj$gene < 0.1)
@@ -139,7 +146,7 @@ for(i in 1:length(idx)){
 
 #integrate with deseq2 gene expression results
 #load deseq 2 results
-DEG_results_list<- readRDS("/omics/groups/OE0219/internal/jmmlc_rnaseq/220.1_rnaseq_knownDEG/results/PostDE/DEG_results_group_list.rds")
+DEG_results_list<- readRDS("/omics/groups/OE0219/internal/jmmlc_rnaseq/220805_rnaseq_knownDEG/results/PostDE/DEG_results_group_list.rds")
 dres <- DEG_results_list$HM_vs_non_HM
 padj$gene_id <- padj$geneID
 padj_gene <- unique(padj[,c("geneID","gene", "gene_id")])

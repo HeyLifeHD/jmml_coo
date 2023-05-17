@@ -75,7 +75,7 @@ done
 
 
 #with custom bg
-cd /home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200612_DMR_model_sub_repMerged
+cd /omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200612_DMR_model_sub_repMerged
 chmod 777 -R ./homer
 conda activate homer2
 
@@ -83,6 +83,6 @@ for file in `ls homer/*/DMRs.bed`
 do
     echo ${file}
     path=`dirname ${file}`
-    findMotifsGenome.pl ${file} hg19 ${path}_customBG -size given -preparsedDir ${path}/ -p 6 -bg /home/heyj/omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200612_DMR_model_sub_repMerged/EpigenotypeHM/random_BG/random_bg_merged.sorted.bed
+    findMotifsGenome.pl ${file} hg19 ${path}_customBG -size given -preparsedDir ${path}/ -p 6 -bg /omics/groups/OE0219/internal/jmmlc_pbat/data/odcf_md/analysis/200612_DMR_model_sub_repMerged/EpigenotypeHM/random_BG/random_bg_merged.sorted.bed
     echo ${path}
 done

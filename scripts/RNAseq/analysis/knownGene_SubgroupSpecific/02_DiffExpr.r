@@ -43,7 +43,7 @@ geom_bar(aes(x=description, y=LogP, fill = "-log10(p.value)"), stat = "identity"
 }
 
 #Directories
-base.dir<- "/omics/groups/OE0219/internal/jmmlc_rnaseq/220805_rnaseq_knownDEG"
+base.dir<- "/omics/groups/OE0219/internal/jmmlc_rnaseq/220819_rnaseq_knownDEG_subgroupSpecific"
 base_results.dir <- file.path(base.dir, "results")
 results.dir<- file.path(base_results.dir , "tables")
 PreDE.dir <- file.path(base_results.dir,"PreDE")
@@ -51,8 +51,16 @@ PostDE.dir <- file.path(base_results.dir,"PostDE")
 
 #Read in Data
 vst <- readRDS(file.path(results.dir, "vst.rds"))
+saveRDS(assay(vst), file.path(results.dir, "vst_assay.rds"))
 anno <- colData(vst)
 dds <-readRDS(file.path(results.dir, "dds.rds"))
+coun <- counts(dds, normalized=TRUE)
+saveRDS(coun, file.path(results.dir, "normalized_counts.rds"))
+
+#create and save vst
+vst <- vst(dds)
+anno <- colData(vst)
+saveRDS(vst,file = file.path(results.dir,"vst.rds"))
 #Take a look at design and annotation of samples
 design(dds)
 #Set specifications
@@ -61,20 +69,28 @@ lfc <- 0##set logfold2 cutoff
 
 #Running the differential expression 
 #set up all possible contrasts
-contrasts <- as.data.frame(combn(as.character(unique(colData(dds)$Epigenotype)), 2))
 results <- list()
-for (i in 1:length(contrasts)) {
-  results[[i]]<- results(dds, contrast=c("Epigenotype",as.character(contrasts[1,i]),  as.character(contrasts[2,i])), alpha = alpha, lfcThreshold = lfc) #extract results of wanted comparison
-  print(paste0( as.character(contrasts[1,i]), "_vs_",  as.character(contrasts[2,i])))
+for (i in resultsNames(dds)[2:3]) {
+  results[[i]]<- results(dds, name=i, alpha = alpha, lfcThreshold = lfc) #extract results of wanted comparison
   print(summary(results[[i]]))
 }
-nam<-vector()
-for (i in 1:length(contrasts)) {
-nam[i]<- paste0( as.character(contrasts[1,i]), "_vs_",  as.character(contrasts[2,i]))
-}
-names(results)<- nam
-names(contrasts)<- nam
 
+names(results)<- resultsNames(dds)[2:3]
+
+# #set up all possible contrasts test
+# contrasts <- as.data.frame(combn(as.character(unique(colData(dds)$consensusCluster3)), 2))
+# results2 <- list()
+# for (i in 1:length(contrasts)) {
+#   results2[[i]]<- results(dds, contrast=c("consensusCluster3",as.character(contrasts[1,i]),  as.character(contrasts[2,i])), alpha = alpha, lfcThreshold = lfc) #extract results of wanted comparison
+#   print(paste0( as.character(contrasts[1,i]), "_vs_",  as.character(contrasts[2,i])))
+#   print(summary(results2[[i]]))
+# }
+# nam<-vector()
+# for (i in 1:length(contrasts)) {
+# nam[i]<- paste0( as.character(contrasts[1,i]), "_vs_",  as.character(contrasts[2,i]))
+# }
+# names(results2)<- nam
+# names(contrasts)<- nam
 
 #annotate samples
 #Make a dataframe out of it
@@ -128,6 +144,7 @@ DEG_results_list_plot <- lapply(DEG_results_list_plot, function(x){
 lapply(DEG_results_list_plot, function(x){
     (table(x$col))
 })
+
 #Volcano Plot
 library(RColorBrewer)
 col <- brewer.pal(3,"RdBu")
@@ -235,24 +252,6 @@ for (i in names(genes2plot)){
   pdf(file.path(PostDE.dir,i,"Heat_correlation_DEG_reds.pdf"))
   print(heat[[i]])
   dev.off()
-}
-
-#subset only groups of interest for heatmapa
-heat<-list()
-for (i in names(genes2plot)){
-  plot <- mat_genes[which(rownames(mat_genes) %in% genes2plot[[i]] ),]
-  #annorow <- ifelse(is.na(plot$symbol),rownames(plot), plot$symbol)
-  annorow <- rownames(plot)
-
-    comp_oi <- sapply(strsplit(i, "_"), function(x)c(x[1], x[3]))
-    heat[[i]]<- pheatmap(plot[,     rownames(anno[anno$Epigenotype %in% comp_oi,])], 
-    scale="row", show_colnames=F,color= c(hcl.colors(20,"Blues"),rev(hcl.colors(20,"Reds"))),#labels_row=annorow,
-                       annotation_col=as.data.frame(annovst),show_rownames=F,annotation_colors=anno_colors,
-                       clustering_distance_rows="correlation") 
-  pdf(file.path(PostDE.dir,i,"Heat_correlation_DEG_subgroups.pdf"))
-  print(heat[[i]])
-  dev.off()
-  print(i)
 }
 
 #common heatmapf
